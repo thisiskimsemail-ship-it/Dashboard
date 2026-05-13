@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wade Master Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+/* ── Wade Design System v10 · canonical tokens ───────────────
+   Navy     #1E194F  (primary · brand ground)
+   Orange   #F15A22  (brand pop · Scale-ups audience)
+   Teal     #27BDBE  (Org Innovators audience)
+   Pink     #ED3694  (Investors audience)
+   Yellow   #E4E517  (Educators audience · accent on navy)
+   Cream    #FAF7F2  (editorial off-white)
+   White    #FFFFFF  (ink on coloured grounds)
+   Type     GT Walsheim · headline tracking -0.025 to -0.035em
+            wordmark tracking 0.22em uppercase
+   ─────────────────────────────────────────────────────────── */
+:root{color-scheme:light;--wade-navy:#1E194F;--wade-orange:#F15A22;--wade-teal:#27BDBE;--wade-pink:#ED3694;--wade-yellow:#E4E517;--wade-cream:#FAF7F2;--wade-white:#FFFFFF;--lavender:#B8B5CC;--purple:#9C8AB8;--plum:#1E194F;--plum-soft:#3A3470;--navy:#1E194F;--navy-soft:#2A2466;--orange:#F15A22;--pink:#ED3694;--teal:#27BDBE;--yellow:#E4E517;--cream:#FAF7F2;--off-white:#FFFEF9;--border:#E8E4D9;--wade-font:'GT Walsheim',-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI',Arial,sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--off-white);color:var(--wade-navy);font-family:var(--wade-font);-webkit-font-smoothing:antialiased;line-height:1.45;letter-spacing:-0.005em}
+.cover{position:relative;background:var(--wade-navy);color:#fff;padding:48px 40px 32px;border-bottom:3px solid var(--wade-yellow)}
+.cover-logo{position:absolute;top:32px;right:40px;width:88px;height:auto;color:#fff;opacity:0.95}
+.cover-logo svg{width:100%;height:auto;display:block}
+.cover h1{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--wade-yellow);font-weight:500;margin-bottom:12px;font-family:var(--wade-font)}
+.cover h2{font-size:34px;letter-spacing:-0.025em;line-height:1.06;font-weight:500;max-width:780px;margin-bottom:10px}
+.cover .lede{font-size:14px;color:rgba(255,255,255,0.72);max-width:760px;margin-bottom:20px;line-height:1.55;letter-spacing:-0.005em}
+.cover-controls{display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-bottom:22px;background:var(--navy-soft);border:1px solid var(--navy-soft);border-radius:4px;padding:12px 16px}
+.control{display:flex;flex-direction:column;gap:3px}
+.control-label{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#B8B5CC;font-weight:500}
+.control input,.control select{background:var(--wade-navy);border:1px solid #3A3470;color:#fff;padding:6px 10px;font-size:13px;border-radius:4px;font-family:var(--wade-font);font-weight:400;outline:none;cursor:pointer;letter-spacing:-0.005em}
+.control input::-webkit-calendar-picker-indicator{filter:invert(1) opacity(0.6);cursor:pointer}
+.control select option{color:var(--wade-navy)}
+.control input:focus,.control select:focus{border-color:var(--wade-yellow);background:var(--wade-navy)}
+.control .static-text{font-size:13px;color:#fff;font-weight:500}
+.cover-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;max-width:1280px}
+.cs-card{background:var(--navy-soft);border:1px solid var(--navy-soft);border-radius:4px;padding:14px 16px;border-left:3px solid var(--wade-orange)}
+.cs-card.teal{border-left-color:var(--wade-teal)}.cs-card.pink{border-left-color:var(--wade-pink)}.cs-card.yellow{border-left-color:var(--wade-yellow)}.cs-card.lavender{border-left-color:var(--lavender)}.cs-card.purple{border-left-color:var(--purple)}
+.cs-label{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#B8B5CC;font-weight:500;margin-bottom:5px}
+.cs-val{font-size:24px;font-weight:500;color:#fff;line-height:1;margin-bottom:3px;letter-spacing:-0.025em}
+.cs-sub{font-size:10px;color:#B8B5CC;letter-spacing:-0.005em}
+
+.tabs{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;display:flex;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(30,25,79,0.06);overflow-x:auto}
+.tab{padding:16px 20px;font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;color:var(--plum-soft);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;font-family:var(--wade-font);white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:8px}
+.tab:hover{color:var(--wade-navy)}
+.tab.active{color:var(--wade-orange);border-bottom-color:var(--wade-orange);font-weight:500}
+.tab-badge{font-size:7.5px;letter-spacing:0.15em;padding:2px 6px;border-radius:8px;font-weight:600;text-transform:uppercase;display:inline-block;line-height:1.3}
+.tab-badge.live{background:rgba(39,189,190,0.15);color:#1A8889}
+.tab-badge.static{background:rgba(184,181,204,0.28);color:#5F5C82}
+.tab-badge.mixed{background:rgba(228,229,23,0.25);color:#7A7A12}
+.tab-badge.meta{background:rgba(30,25,79,0.08);color:var(--plum-soft)}
+
+main{padding:24px 32px 50px;max-width:1500px;margin:0 auto}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.section-title{font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-soft);font-weight:500;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.section-title .accent{color:var(--wade-orange)}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:16px 18px;position:relative}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--wade-orange);border-radius:4px 4px 0 0}
+.kpi-card.teal::before{background:var(--wade-teal)}.kpi-card.pink::before{background:var(--wade-pink)}.kpi-card.yellow::before{background:var(--wade-yellow)}.kpi-card.lavender::before{background:var(--lavender)}.kpi-card.purple::before{background:var(--purple)}
+.kpi-label{font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-soft);margin-bottom:7px;font-weight:500}
+.kpi-val{font-size:28px;color:var(--wade-navy);line-height:1.05;margin-bottom:5px;font-weight:500;letter-spacing:-0.025em}
+.kpi-val .unit{font-size:13px;color:var(--plum-soft);margin-left:3px;font-weight:400;letter-spacing:0}
+.kpi-delta{font-size:11px;color:var(--wade-teal);font-weight:500;min-height:14px}
+.kpi-delta.warn{color:var(--wade-pink)}
+.kpi-source{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:#9A95B0;margin-top:9px;padding-top:9px;border-top:1px solid var(--cream);font-weight:400}
+
+.headlines{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:20px}
+.headline{background:#fff;border:1px solid var(--border);border-radius:4px;padding:14px 16px;border-left:4px solid var(--wade-orange)}
+.headline.h-pink{border-left-color:var(--wade-pink)}.headline.h-teal{border-left-color:var(--wade-teal)}.headline.h-yellow{border-left-color:var(--wade-yellow)}.headline.h-lavender{border-left-color:var(--lavender)}
+.hl-tag{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--wade-orange);font-weight:500;margin-bottom:6px}
+.headline.h-pink .hl-tag{color:var(--wade-pink)}.headline.h-teal .hl-tag{color:var(--wade-teal)}.headline.h-yellow .hl-tag{color:#9C9D14}.headline.h-lavender .hl-tag{color:#7B7790}
+.hl-text{font-size:12.5px;color:var(--wade-navy);line-height:1.5;letter-spacing:-0.005em}
+.hl-text strong{color:var(--wade-navy);font-weight:500}
+
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-grid.full{grid-template-columns:1fr}
+.panel{background:#fff;border:1px solid var(--border);border-radius:4px;padding:18px 22px 16px}
+.panel.studio{border-left:3px solid var(--purple)}
+.panel.audience{border-left:3px solid var(--wade-pink)}
+.panel-title{font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--wade-orange);margin-bottom:4px;font-weight:500}
+.panel.studio .panel-title{color:var(--purple)}
+.panel.audience .panel-title{color:var(--wade-pink)}
+.panel-sub{font-size:12px;color:var(--plum-soft);margin-bottom:12px;line-height:1.4;letter-spacing:-0.005em}
+.chart-wrap{position:relative;height:240px}
+.chart-wrap.tall{height:300px}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+table.tbl th{text-align:left;padding:9px;font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--plum-soft);font-weight:500;border-bottom:1px solid var(--border)}
+table.tbl td{padding:9px;border-bottom:1px solid var(--cream);color:var(--wade-navy);letter-spacing:-0.005em}
+table.tbl td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;letter-spacing:0}
+table.tbl .tag{font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:2px 7px;border-radius:9px;color:#fff;font-weight:500;display:inline-block}
+
+.callout{background:var(--cream);border-left:3px solid var(--wade-orange);padding:13px 16px;border-radius:4px;margin:12px 0;font-size:12px;color:var(--plum-soft);line-height:1.5;letter-spacing:-0.005em}
+.callout strong{color:var(--wade-navy);font-weight:500}
+.callout.warning{background:var(--cream);border-left-color:var(--wade-pink)}
+
+/* Funnel */
+.fs-stages{padding:8px 0}
+.fs-row{display:grid;grid-template-columns:140px 1fr 80px 90px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--cream)}
+.fs-row:last-child{border-bottom:none}
+.fs-stage{font-size:12.5px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.005em}
+.fs-stage .fs-source{font-size:10px;color:var(--plum-soft);font-weight:400;margin-top:2px;display:block}
+.fs-bar-wrap{height:30px;background:var(--cream);border-radius:4px;overflow:hidden}
+.fs-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:12px;font-size:12px;color:#fff;font-weight:500;background:var(--wade-orange)}
+.fs-bar.s2{background:var(--wade-pink)}.fs-bar.s3{background:var(--wade-teal)}.fs-bar.s4{background:var(--wade-yellow);color:var(--wade-navy)}
+.fs-value{font-size:15px;color:var(--wade-navy);text-align:right;font-variant-numeric:tabular-nums;font-weight:500;letter-spacing:-0.015em}
+.fs-rate{font-size:10.5px;color:var(--plum-soft);text-align:right;line-height:1.3}
+.fs-rate .rate-val{color:var(--wade-teal);font-weight:500;font-size:13px}
+.fs-rate.warn .rate-val{color:var(--wade-pink)}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
+.cards-grid.aud{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+.pcard{background:#fff;border:1px solid var(--border);border-radius:4px;padding:16px 18px}
+.pcard-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--cream)}
+.pcard-name{font-size:15px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.02em}
+.pcard.aud-founders{border-top:3px solid var(--wade-orange)}.pcard.aud-investors{border-top:3px solid var(--wade-teal)}.pcard.aud-org-innovators{border-top:3px solid var(--wade-pink)}.pcard.aud-educators{border-top:3px solid var(--wade-yellow)}
+.pcard.aud-founders .pcard-name{color:var(--wade-orange)}.pcard.aud-investors .pcard-name{color:var(--wade-teal)}.pcard.aud-org-innovators .pcard-name{color:var(--wade-pink)}.pcard.aud-educators .pcard-name{color:#9C9D14}
+.pcard-rank{font-size:10px;color:var(--plum-soft);letter-spacing:0.18em;text-transform:uppercase;font-weight:500}
+.pcard-progs{font-size:10.5px;color:var(--plum-soft);margin-top:3px;letter-spacing:-0.005em}
+.ps-row{display:grid;grid-template-columns:80px 1fr 60px;gap:8px;align-items:center;font-size:11px;margin-bottom:6px}
+.ps-label{font-size:10px;color:var(--plum-soft);font-weight:500;letter-spacing:0.05em}
+.ps-bar-wrap{height:14px;background:var(--cream);border-radius:3px;overflow:hidden}
+.ps-bar{height:100%;border-radius:3px;background:var(--wade-orange)}
+.ps-bar.s2{background:var(--wade-pink)}.ps-bar.s3{background:var(--wade-teal)}.ps-bar.s4{background:var(--wade-yellow)}
+.ps-bar.empty{background:repeating-linear-gradient(45deg,var(--cream),var(--cream) 4px,#F2EDE2 4px,#F2EDE2 8px)}
+.ps-value{font-size:11px;color:var(--wade-navy);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.ps-rates{margin-top:8px;padding-top:8px;border-top:1px solid var(--cream);display:flex;gap:14px;font-size:10px;color:var(--plum-soft);flex-wrap:wrap}
+.ps-rates .rv{color:var(--wade-teal);font-weight:500}.ps-rates .rv.warn{color:var(--wade-pink)}
+
+/* Narrative · per-tab "what's happening" panel */
+.narrative{background:#fff;border:1px solid var(--border);border-left:4px solid var(--wade-yellow);padding:14px 18px;border-radius:4px;margin:0 0 18px 0;font-size:13px;color:var(--wade-navy);line-height:1.55;letter-spacing:-0.005em}
+.narrative .nrv-label{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#9C9D14;font-weight:500;margin-bottom:6px;display:block}
+.narrative strong{font-weight:500;color:var(--wade-navy)}
+
+/* Definition-under-review placeholder */
+.def-review{background:repeating-linear-gradient(45deg,var(--cream),var(--cream) 6px,#F2EDE2 6px,#F2EDE2 12px);border:1px solid var(--border);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;min-height:90px}
+.def-review .dr-label{font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-soft);font-weight:500;margin-bottom:6px}
+.def-review .dr-val{font-size:14px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.015em;line-height:1.3}
+.def-review .dr-note{font-size:10px;color:var(--plum-soft);margin-top:6px;letter-spacing:-0.005em;line-height:1.4}
+
+/* Engagement segments */
+.seg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.seg-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:14px 16px;border-top:3px solid var(--wade-orange);position:relative}
+.seg-card.s-champ{border-top-color:var(--wade-orange)}
+.seg-card.s-active{border-top-color:var(--wade-teal)}
+.seg-card.s-slip{border-top-color:var(--wade-yellow)}
+.seg-card.s-dorm{border-top-color:#F89D78}
+.seg-card.s-lost{border-top-color:var(--wade-pink)}
+.seg-card.s-cold{border-top-color:#7B7790}
+.seg-card.s-untouch{border-top-color:var(--lavender)}
+.seg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.seg-name{font-size:14px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.02em}
+.seg-pct{font-size:11px;color:var(--plum-soft);letter-spacing:0.18em;text-transform:uppercase;font-weight:500}
+.seg-val{font-size:24px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.025em;line-height:1;margin-bottom:6px}
+.seg-rule{font-size:10.5px;color:var(--plum-soft);font-style:italic;margin-bottom:8px;letter-spacing:-0.005em}
+.seg-action{font-size:12px;color:var(--wade-navy);line-height:1.45;padding-top:8px;border-top:1px solid var(--cream);letter-spacing:-0.005em}
+.seg-action .a-label{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--wade-orange);font-weight:500;margin-right:6px}
+.seg-card.s-active .seg-action .a-label{color:var(--wade-teal)}
+.seg-card.s-slip .seg-action .a-label{color:#9C9D14}
+.seg-card.s-dorm .seg-action .a-label{color:#D4663C}
+.seg-card.s-lost .seg-action .a-label{color:var(--wade-pink)}
+.seg-card.s-cold .seg-action .a-label{color:#7B7790}
+.seg-card.s-untouch .seg-action .a-label{color:#9C8AB8}
+
+/* Issues / Things to know */
+.issues-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+.issue{background:#fff;border:1px solid var(--border);border-radius:4px;padding:16px 18px;border-left:4px solid var(--wade-orange);position:relative}
+.issue.sev-low{border-left-color:var(--wade-teal)}
+.issue.sev-med{border-left-color:var(--wade-yellow)}
+.issue.sev-high{border-left-color:var(--wade-pink)}
+.issue.sev-fixed{border-left-color:#9C8AB8;opacity:0.7}
+.issue-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+.issue-title{font-size:14px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.015em;flex:1;min-width:200px}
+.issue-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.issue-tag{font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;padding:3px 8px;border-radius:9px;color:#fff;font-weight:500;display:inline-block;background:var(--wade-navy)}
+.issue-tag.t-can{background:var(--wade-teal)}
+.issue-tag.t-you{background:var(--wade-orange)}
+.issue-tag.t-big{background:var(--wade-pink)}
+.issue-tag.t-no{background:#9A95B0}
+.issue-tag.t-sev-low{background:var(--wade-teal)}
+.issue-tag.t-sev-med{background:var(--wade-yellow);color:var(--wade-navy)}
+.issue-tag.t-sev-high{background:var(--wade-pink)}
+.issue-body{font-size:12.5px;color:var(--plum-soft);line-height:1.5;letter-spacing:-0.005em}
+.issue-body strong{color:var(--wade-navy);font-weight:500}
+.issue-fix{font-size:11.5px;color:var(--plum-soft);margin-top:8px;padding-top:8px;border-top:1px solid var(--cream);line-height:1.5}
+.issue-fix .fix-label{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--wade-orange);font-weight:500;margin-right:6px}
+
+.summary-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.sum-card{background:#fff;border:1px solid var(--border);border-radius:4px;padding:12px 14px}
+.sum-card .sum-val{font-size:24px;color:var(--wade-navy);font-weight:500;letter-spacing:-0.025em;line-height:1}
+.sum-card .sum-label{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-soft);font-weight:500;margin-top:6px}
+
+footer{padding:20px 32px;background:var(--cream);border-top:1px solid var(--border);font-size:10.5px;color:var(--plum-soft);line-height:1.6;letter-spacing:-0.005em}
+footer code{background:rgba(30,25,79,0.06);padding:1px 5px;border-radius:3px;font-size:10px;color:var(--wade-navy)}
+
+@media(max-width:760px){.chart-grid{grid-template-columns:1fr}.cover{padding:32px 20px}.tabs{padding:0 16px}main{padding:18px 16px}.fs-row{grid-template-columns:1fr;gap:6px}.cards-grid{grid-template-columns:1fr}.cards-grid.aud{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<!-- ====================================================================== -->
+<!-- PASSWORD GATE · client-side                                              -->
+<!-- ====================================================================== -->
+<!-- This is a basic password gate to stop casual viewers / search-engine     -->
+<!-- indexing. It is NOT real security — anyone who opens DevTools and        -->
+<!-- removes the #wade-auth-gate element can see the dashboard. Acceptable    -->
+<!-- for low-stakes internal sharing. For real protection use Cloudflare      -->
+<!-- Access, Azure Static Web Apps with M365 auth, or SharePoint embed.       -->
+<!--                                                                          -->
+<!-- DEFAULT PASSWORD: wade-2026                                              -->
+<!--                                                                          -->
+<!-- TO CHANGE THE PASSWORD:                                                  -->
+<!--   1. Pick a new password                                                 -->
+<!--   2. Open this site in any browser, hit F12 to open DevTools, click      -->
+<!--      Console, then paste this command (substitute your password):        -->
+<!--        crypto.subtle.digest("SHA-256",new TextEncoder().encode("YOUR_NEW_PASSWORD")).then(b=>console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")))  -->
+<!--   3. Copy the hex string that prints                                     -->
+<!--   4. Replace the PASSWORD_HASH value in the <script> block below         -->
+<!--   5. Save and re-deploy                                                  -->
+<!--                                                                          -->
+<!-- TO REMOVE THE GATE: delete this entire HTML block from <!--===--> to     -->
+<!-- the closing </script> of the gate.                                       -->
+<!-- ====================================================================== -->
+<div id="wade-auth-gate" style="position:fixed;inset:0;background:#1E194F;z-index:99999;display:flex;align-items:center;justify-content:center;font-family:'GT Walsheim',-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI',Arial,sans-serif;padding:24px;box-sizing:border-box">
+  <div style="background:#FAF7F2;padding:44px 40px;border-radius:14px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.35);box-sizing:border-box">
+    <div style="font-size:11px;letter-spacing:0.22em;color:#F15A22;text-transform:uppercase;margin-bottom:10px;font-weight:600">Wade Marketing</div>
+    <h1 style="font-size:28px;color:#1E194F;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em">Master Dashboard</h1>
+    <div style="color:#3A3470;font-size:14px;margin-bottom:28px;line-height:1.5">Internal dashboard. Enter the team password to continue.</div>
+    <form id="wade-auth-form" onsubmit="return wadeCheckPassword(event)">
+      <input type="password" id="wade-auth-input" autocomplete="current-password" autofocus placeholder="Password" style="width:100%;padding:14px 16px;border:1.5px solid #D5CFE0;border-radius:6px;font-size:15px;font-family:inherit;color:#1E194F;outline:none;box-sizing:border-box;background:#fff" />
+      <div id="wade-auth-error" style="color:#F15A22;font-size:13px;margin-top:10px;min-height:18px"></div>
+      <button type="submit" style="margin-top:6px;width:100%;background:#F15A22;color:#FAF7F2;border:0;padding:14px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.05em;text-transform:uppercase">Open Dashboard</button>
+    </form>
+    <div style="margin-top:22px;font-size:11.5px;color:#3A3470;opacity:0.75;line-height:1.55">If you don't have the password, ask Kim Howells. This is internal Wade marketing data — please don't share the URL or password outside the team.</div>
+  </div>
+</div>
+<script>
+// SHA-256 hash of the password. Default: "wade-2026"
+const WADE_PASSWORD_HASH = "49b8e6234dc0f8a44ec18744215ed8d9e984c1dd64bb49a39c0297f5f52a1196";
+
+async function wadeSha256(text){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+async function wadeCheckPassword(e){
+  e.preventDefault();
+  const input = document.getElementById("wade-auth-input").value;
+  const hash = await wadeSha256(input);
+  if(hash === WADE_PASSWORD_HASH){
+    sessionStorage.setItem("wade-dash-auth","1");
+    const g = document.getElementById("wade-auth-gate");
+    if(g) g.remove();
+  } else {
+    document.getElementById("wade-auth-error").textContent = "Wrong password. Try again.";
+    const inp = document.getElementById("wade-auth-input");
+    inp.value = "";
+    inp.focus();
+  }
+  return false;
+}
+
+// Auto-unlock if already authenticated this browser session
+(function(){
+  if(sessionStorage.getItem("wade-dash-auth") === "1"){
+    const remove = () => { const g = document.getElementById("wade-auth-gate"); if(g) g.remove(); };
+    if(document.readyState === "loading"){
+      document.addEventListener("DOMContentLoaded", remove);
+    } else {
+      remove();
+    }
+  }
+})();
+</script>
+<!-- ====================================================================== -->
+<!-- END PASSWORD GATE                                                       -->
+<!-- ====================================================================== -->
+
+
+
+<header class="cover">
+  <div class="cover-logo" aria-label="Wade Institute">
+    <svg viewBox="0 0 146 152" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g fill="currentColor">
+        <polygon points="87.8,13.9 13.4,13.9 13.4,33.3 18,33.3 18,18.5 85.8,18.5 129.6,66.4 129.6,134.7 61.4,134.7 18,87.6 18,81.6 13.4,81.6 13.4,89.3 59.5,139.2 134.2,139.2 134.2,64.6"/>
+        <path d="M13.8,75.6v-15h2.9v15H13.8z"/>
+        <path d="M19.9,75.6v-15h2l8.4,9.8v-9.8h2.9v15h-2l-8.4-9.8v9.8H19.9z"/>
+        <path d="M35,73.5l1.9-2c0.4,0.5,1,0.9,1.6,1.2c0.6,0.3,1.3,0.5,1.9,0.5c0.6,0,1.2-0.2,1.6-0.5c0.4-0.4,0.6-0.8,0.6-1.4c0-0.4-0.1-0.7-0.3-1c-0.2-0.3-0.5-0.5-0.8-0.7c-0.4-0.2-0.7-0.4-1.1-0.5c-0.4-0.1-0.8-0.3-1.3-0.5c-0.5-0.2-0.9-0.4-1.3-0.6c-1.4-0.8-2.1-2-2.1-3.4c0-0.6,0.1-1.2,0.4-1.8c0.3-0.5,0.7-1,1.1-1.3c0.5-0.3,1-0.6,1.6-0.8c0.6-0.2,1.2-0.3,1.8-0.3c1.6,0,3.1,0.5,4.3,1.4l-1.5,2.1c-0.3-0.3-0.7-0.5-1.2-0.7c-0.5-0.2-0.9-0.3-1.4-0.3c-0.3,0-0.6,0-0.8,0.1c-0.3,0.1-0.5,0.2-0.7,0.3c-0.2,0.1-0.4,0.3-0.5,0.5c-0.1,0.2-0.2,0.5-0.2,0.7c0,0.3,0.1,0.5,0.3,0.8c0.2,0.2,0.5,0.4,0.8,0.6c0.3,0.2,0.7,0.3,1.1,0.5c0.4,0.2,0.8,0.4,1.3,0.5c0.4,0.2,0.9,0.4,1.3,0.6c0.4,0.3,0.8,0.5,1.1,0.9c0.3,0.3,0.6,0.7,0.8,1.2c0.2,0.5,0.3,1,0.3,1.6c0,0.9-0.2,1.6-0.7,2.3c-0.5,0.7-1.1,1.2-1.9,1.6c-0.8,0.4-1.6,0.6-2.5,0.6C38.5,75.8,36.7,75,35,73.5z"/>
+        <path d="M46.5,60.6h10.8v2.6h-4v12.4h-2.9V63.1h-4V60.6z"/>
+        <path d="M59.1,75.6v-15H62v15H59.1z"/>
+        <path d="M63.7,60.6h10.8v2.6h-4v12.4h-2.9V63.1h-4V60.6z"/>
+        <path d="M85.2,75.4c-0.8,0.3-1.6,0.4-2.5,0.4c-0.9,0-1.7-0.1-2.5-0.4c-0.8-0.3-1.5-0.6-2-1.1c-1.3-1.1-1.9-2.8-1.9-5v-8.7h2.9v8.9c0,1.2,0.3,2.2,1,2.8c0.7,0.6,1.5,1,2.6,1c1,0,1.9-0.3,2.6-1c0.7-0.6,1-1.5,1-2.8v-8.9h2.9v8.7c0,2.2-0.6,3.8-1.9,5C86.6,74.7,85.9,75.1,85.2,75.4z"/>
+        <path d="M90.8,60.6h10.8v2.6h-4v12.4h-2.9V63.1h-4V60.6z"/>
+        <path d="M112.4,63.1h-6.1v3.1h4.6v2.6h-4.6V73h6.3v2.6h-9.2v-15h9V63.1z"/>
+        <path d="M17.3,54.5l-5-15h2.9l3.1,9.4l3.3-9.4h2l3.3,9.4l3.1-9.4H33l-5,15h-2L22.6,45l-3.3,9.5H17.3z"/>
+        <path d="M34.8,54.5h-3l6.4-15h2l6.4,15h-3l-1.4-3.3h-6L34.8,54.5z M39.2,44.1l-1.9,4.4h3.8L39.2,44.1z"/>
+        <path d="M48.2,39.5h4.7c2.2,0,3.9,0.5,5.2,1.4c0.9,0.7,1.7,1.6,2.2,2.6c0.5,1.1,0.8,2.2,0.8,3.4c0,1.2-0.3,2.4-0.8,3.5C59.7,51.5,59,52.4,58,53c-1.3,0.9-3,1.4-5.2,1.4h-4.7V39.5z M58.1,47c0-1.3-0.4-2.4-1.1-3.3c-0.9-1.1-2.2-1.7-3.8-1.7h-2.1v9.9h2.1c1.7,0,2.9-0.6,3.8-1.7C57.8,49.3,58.1,48.2,58.1,47z"/>
+        <path d="M72.3,42h-6.1v3.1h4.6v2.6h-4.6v4.2h6.3v2.6h-9.2v-15h9V42z"/>
+      </g>
+    </svg>
+  </div>
+  <h1>Wade Master Dashboard</h1>
+  <h2>Marketing &amp; customer acquisition</h2>
+  <div class="lede">Static snapshot mirroring the live connected master. Seven tabs cover Overview, Performance, Full Funnel, Program Funnels, Audience Funnels, Community Hub and Organic Content.</div>
+  <div class="cover-controls">
+    <div class="control"><span class="control-label">Snapshot date</span><input type="date" id="snapshot-date"></div>
+    <div class="control"><span class="control-label">Period</span>
+      <select id="period-select">
+        <option value="ytd" selected>YTD · 1 Jan 2026 – present</option>
+        <option value="12m">Rolling 12 months</option>
+      </select>
+    </div>
+    <div class="control"><span class="control-label">GA4 property</span><span class="static-text">392602094</span></div>
+    <div class="control"><span class="control-label">HubSpot</span><span class="static-text">442236365 · Wade-only</span></div>
+  </div>
+  <div class="cover-summary">
+    <div class="cs-card"><div class="cs-label">LinkedIn engagement</div><div class="cs-val" id="cs-li-er">—</div><div class="cs-sub">4–9× industry benchmark · changes with period</div></div>
+    <div class="cs-card pink"><div class="cs-label">Site users</div><div class="cs-val" id="cs-users">—</div><div class="cs-sub">GA4 totalUsers · changes with period</div></div>
+    <div class="cs-card purple"><div class="cs-label">Studio users</div><div class="cs-val" id="cs-studio">—</div><div class="cs-sub">Apr 2026 onwards · changes with period</div></div>
+    <div class="cs-card teal"><div class="cs-label">Paid spend</div><div class="cs-val" id="cs-spend">—</div><div class="cs-sub">G + LI + Meta · changes with period</div></div>
+    <div class="cs-card yellow"><div class="cs-label">Closed-won</div><div class="cs-val" id="cs-won">—</div><div class="cs-sub">HubSpot Wade · changes with period</div></div>
+    <div class="cs-card lavender"><div class="cs-label">Emailable audience</div><div class="cs-val" id="cs-aud">—</div><div class="cs-sub">Wade-listed contacts · current total</div></div>
+    <div class="cs-card teal"><div class="cs-label">Active email · 30d</div><div class="cs-val" id="cs-active">—</div><div class="cs-sub">Opened · fixed 30-day window</div></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="overview">Overview <span class="tab-badge live" title="Refreshed Mondays from live sources">Live</span></button>
+  <button class="tab" data-tab="performance">Performance <span class="tab-badge live" title="Refreshed Mondays from GA4, Google Ads, LinkedIn, HubSpot">Live</span></button>
+  <button class="tab" data-tab="full-funnel">Full Funnel <span class="tab-badge live" title="Computed from live Performance data">Live</span></button>
+  <button class="tab" data-tab="organic">Organic Content <span class="tab-badge live" title="Top of funnel · LinkedIn impressions & reach · refreshed Mondays · 12mo and YTD both available via period toggle">Live</span></button>
+  <button class="tab" data-tab="hub">Community Hub <span class="tab-badge mixed" title="Top–mid funnel · article views & content consumption · Hub trend live, top-articles table preserved from prior snapshot">Mixed</span></button>
+  <button class="tab" data-tab="pages">Website Engagement <span class="tab-badge live" title="Mid funnel · deeper page-level engagement signals from GA4">Live</span></button>
+  <button class="tab" data-tab="studio">The Studio <span class="tab-badge live" title="Mid–lower funnel · engaged users actively using Wade tools at studio.wadeinstitute.org.au">Live</span></button>
+  <button class="tab" data-tab="edm">EDM Engagement <span class="tab-badge live" title="Nurture · HubSpot contact-level email engagement · YTD and 12mo windows via period toggle">Live</span></button>
+  <button class="tab" data-tab="program-funnel">Program Funnels <span class="tab-badge live" title="Bottom of funnel · program-level conversion · HubSpot deal_name keyword joins, GA4 program URLs, Google Ads direct campaigns, LinkedIn (inferred to VCC)">Live</span></button>
+  <button class="tab" data-tab="audience-funnel">Audience Funnels <span class="tab-badge live" title="Bottom of funnel · audience-archetype roll-up of programs + matched ad campaigns">Live</span></button>
+  <button class="tab" data-tab="defs">Definitions <span class="tab-badge meta" title="Sources, metric definitions, filters and attribution policies">Meta</span></button>
+  <button class="tab" data-tab="known">Things to know <span class="tab-badge meta" title="Manually curated data quality log">Meta</span></button>
+</nav>
+
+<main>
+
+<section class="tab-panel active" id="tab-overview">
+  <div class="section-title">Headlines · <span class="accent">the gist of last week</span></div>
+  <div class="headlines">
+    <div class="headline"><div class="hl-tag">Fireside · AI x VC</div><div class="hl-text"><strong>May 8 chat with Jethro Cohen (Square Peg) and Lucy Tan (Traild)</strong> on AI, VC and the new rules of winning deals — moderated by Jessica Christiansen-Franks. The recap post pulled 374 LinkedIn engagements.</div></div>
+    <div class="headline h-yellow"><div class="hl-tag">Alumna award win</div><div class="hl-text"><strong>Kaushal Reddy O. (MoE 2025) won the Luminary Visionary Tech Award</strong> at the 7NEWS Young Achiever Awards VIC. Wade EiR Dickie Currer-Ganguli flagged him as "impact-driven genius" after the Showcase Pitch Night last year.</div></div>
+    <div class="headline h-teal"><div class="hl-tag">Community potluck</div><div class="hl-text"><strong>Annual Wade Community Potluck brought together EiRs / IiRs, MoE cohort, interns and mentors</strong> over a communal lunch spanning Albania, Brazil, Lebanon, India, China, Thailand, Indonesia, Malaysia and Australia.</div></div>
+    <div class="headline h-pink"><div class="hl-tag">Studio momentum</div><div class="hl-text"><strong>189 Studio users in May already</strong> vs 159 across all of April — on pace to triple April's volume by month-end. Five Whys, Lean Canvas and Jobs To Be Done lead the tool list.</div></div>
+    <div class="headline h-lavender"><div class="hl-tag">Pipeline + paid</div><div class="hl-text"><strong>Pipeline quieter post-VCC push:</strong> 2 new Wade deals in May, 1 won ($6,295). Google Ads spend eased to ~$18/day (vs $52/day in April) as VCC May applications closed. 52 new audience-lifecycle leads MTD.</div></div>
+  </div>
+  <div class="callout"><strong>Tab navigation:</strong> Tabs are ordered to follow the funnel — summary first, then top-of-funnel awareness, mid-funnel engagement, nurture, and bottom-of-funnel conversion: <strong>Overview / Performance / Full Funnel</strong> (summary) → <strong>Organic Content</strong> (LinkedIn reach, top) → <strong>Community Hub</strong> (article reads) → <strong>Website Engagement</strong> (deeper site engagement) → <strong>The Studio</strong> (active tool users) → <strong>EDM Engagement</strong> (nurture) → <strong>Program Funnels / Audience Funnels</strong> (conversion, bottom). The <strong>Definitions</strong> tab is the source-of-truth for what every metric means; <strong>Things to know</strong> is the data-quality log.<br><br><strong>Data freshness badges</strong> sit on every tab title: <span class="tab-badge live" style="vertical-align:baseline">Live</span> = refreshed every Monday from source systems and trustworthy to act on this week. <span class="tab-badge static" style="vertical-align:baseline">Static</span> = a May 2026 baseline that isn't part of the weekly refresh — treat as directional context, not current state. <span class="tab-badge mixed" style="vertical-align:baseline">Mixed</span> = mostly live with one cached element. <span class="tab-badge meta" style="vertical-align:baseline">Meta</span> = manually curated, not data.</div>
+</section>
+
+<section class="tab-panel" id="tab-performance">
+  <div class="narrative"><span class="nrv-label">What's happening</span>Wade's marketing engine is in a <strong>post-spike steady state</strong>. April's $1,559 Google Ads push (VC Catalyst applications) is winding down — May daily spend has dropped to ~$18/day from ~$52/day. Direct traffic still dominates the channel mix, suggesting Wade's brand-driven traffic is doing more heavy lifting than paid acquisition right now. The HubSpot pipeline shows 13 closed-won in April for $56k, the strongest month of the year; May has opened with 2 deals / $6,295 won.</div>
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Site users</div><div class="kpi-val" id="p-users">—</div><div class="kpi-delta" id="p-users-d">&nbsp;</div><div class="kpi-source">GA4</div></div>
+    <div class="def-review"><div class="dr-label">Conversions · YTD</div><div class="dr-val">Definition under review</div><div class="dr-note">GA4 "conversions" currently counts every event marked as a key event (incl. outbound clicks, file downloads). Real-lead metric will return once the event-name filter is wired in — see Things to know tab.</div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Paid spend</div><div class="kpi-val" id="p-spend">—</div><div class="kpi-delta" id="p-spend-d">&nbsp;</div><div class="kpi-source">G + LI + Meta</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Closed-won</div><div class="kpi-val" id="p-won">—</div><div class="kpi-delta" id="p-won-d">&nbsp;</div><div class="kpi-source">HubSpot Wade</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="panel"><div class="panel-title">Acquisition trend</div><div class="panel-sub">Users + sessions per month</div><div class="chart-wrap"><canvas id="c-acq"></canvas></div></div>
+    <div class="panel"><div class="panel-title">Channel mix</div><div class="panel-sub">Monthly users by GA4 channel</div><div class="chart-wrap"><canvas id="c-channel"></canvas></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="panel"><div class="panel-title">Paid spend by platform</div><div class="panel-sub">Monthly stacked spend (AUD)</div><div class="chart-wrap"><canvas id="c-spend"></canvas></div></div>
+    <div class="panel" style="border-left:3px solid var(--wade-yellow)"><div class="panel-title" style="color:#9C9D14">Conversions trend · under review</div><div class="panel-sub">Chart hidden until the GA4 event-name filter is configured to exclude outbound clicks, file downloads and scroll events. The current `conversions` field overstates real lead volume — see <em>Things to know</em>.</div><div class="def-review" style="margin-top:8px"><div class="dr-label">Why this is hidden</div><div class="dr-val">Bad data is worse than no data</div><div class="dr-note">April Direct showed 7,000 conversions — 17× the next-highest month — almost certainly because GA4 is counting non-lead events. The dashboard hides the metric rather than mislead decisions taken from it. Quick fix in pipeline: confirm with Kim which event names = real leads.</div></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="panel audience"><div class="panel-title">HubSpot · Wade pipelines</div><div class="panel-sub">Wade Sales + MoE only · monthly closed-won + value</div><div class="chart-wrap"><canvas id="c-hs"></canvas></div></div>
+    <div class="panel studio"><div class="panel-title">Studio acquisition</div><div class="panel-sub">studio.wadeinstitute.org.au monthly</div><div class="chart-wrap"><canvas id="c-studio"></canvas></div></div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-full-funnel">
+  <div class="narrative"><span class="nrv-label">What's happening</span>The aggregate Wade funnel <strong>works at the top but leaks in the middle</strong>. Paid impressions and page visits are strong; the bigger story is visit→deal conversion sitting around 1%, which is normal for B2B but where most growth investment should focus. Middle-of-funnel content and nurture are the priority called out in the May 2026 Marketing Story — investor and bespoke content on the Hub are leading the way.</div>
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Paid impressions</div><div class="kpi-val" id="ff-imp">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">G + LI + Meta</div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Page visits</div><div class="kpi-val" id="ff-vis">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">GA4 sessions</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Pipeline deals</div><div class="kpi-val" id="ff-deal">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">HubSpot Wade</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Closed-won</div><div class="kpi-val" id="ff-won">—</div><div class="kpi-delta" id="ff-won-d">&nbsp;</div><div class="kpi-source">HubSpot Wade</div></div>
+    <div class="kpi-card lavender"><div class="kpi-label">Blended ROAS</div><div class="kpi-val" id="ff-roas">—</div><div class="kpi-delta" id="ff-roas-d">&nbsp;</div><div class="kpi-source">Won value ÷ spend</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Funnel shape</div>
+    <div class="panel-sub">Each bar sized to top of funnel. Conversion rates show drop between stages.</div>
+    <div class="fs-stages" id="ff-stages"></div>
+  </div>
+  <div class="callout warning"><strong>The "trust gap":</strong> The drop from Page Visits to Pipeline Deals is where most B2B funnels leak. VC Catalyst is Wade's strongest at ~2% visit→application. Middle-of-funnel content + nurture is the priority called out in the May 2026 Marketing Story.</div>
+  <div class="chart-grid">
+    <div class="panel"><div class="panel-title">Funnel · monthly trend</div><div class="panel-sub">Each stage on its own scale</div><div class="chart-wrap tall"><canvas id="c-ff-trend"></canvas></div></div>
+    <div class="panel"><div class="panel-title">Conversion rate · stage-to-stage</div><div class="panel-sub">Monthly % between adjacent stages</div><div class="chart-wrap tall"><canvas id="c-ff-rates"></canvas></div></div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-program-funnel">
+  <div class="narrative"><span class="nrv-label">What's happening</span><strong>VC Catalyst dominates everything.</strong> VCC alone accounts for the vast majority of won value across all Wade pipelines. MoE has the highest deal volume (62 applications, 22 confirmed enrolments) but zero dollar value here because MoE enrolment fees aren't tracked on the deal record. Smaller programs (AI Conundrum, Impact Catalyst, Wade Inc, EiR) show low deal counts — either they need a measurement upgrade or they're truly small in pipeline terms.</div>
+  <div class="callout"><strong>How to read this:</strong> 12 program funnels using the same 4-stage shape. Each program's bars are normalised to its own max — funnel SHAPE is comparable across programs at different scales. <strong>Attribution policy:</strong> spend + impressions are shown ONLY where directly attributable to a program (e.g., VC Catalyst has its own Google Ads campaign and gets all LinkedIn spend by inference). Programs sharing audience-archetype campaigns show $0 spend — that spend rolls up to the audience card on the next tab.</div>
+  <div class="cards-grid" id="program-grid"></div>
+</section>
+
+<section class="tab-panel" id="tab-audience-funnel">
+  <div class="narrative"><span class="nrv-label">What's happening</span>The <strong>Investors archetype is Wade's revenue engine</strong> — $125,881 won across VCC + VCF + Impact Catalyst + Ag Ventures on ~$9k of attributable paid spend (ROAS ~14×). Founders sits at $0 won despite 22 confirmed MoE enrolments (fee-tracking gap, not weakness). Org Innovators has 21 deals and zero won — those deals are stuck somewhere worth investigating. Educators (UpSchool) is small but efficient at $20k won on $135 spend.</div>
+  <div class="callout"><strong>Audience archetypes:</strong> <strong>Founders</strong> = MoE + Wade Inc + EiR. <strong>Org Innovators</strong> = TLE + AI Conundrum + Growth Engine + Bespoke. <strong>Investors</strong> = VC Catalyst + VC Fundamentals + Impact Catalyst + Ag Ventures. <strong>Educators</strong> = UpSchool. <strong>How it rolls up:</strong> each audience card aggregates its programs' visits + deals + won + program-level spend, PLUS the matching audience-archetype Google Ads campaign (e.g., Investors gets the `1-26 INVESTOR` campaign's $2,335 on top of VCC's direct spend).</div>
+  <div class="cards-grid aud" id="audience-grid"></div>
+</section>
+
+<section class="tab-panel" id="tab-hub">
+  <div class="narrative"><span class="nrv-label">What's happening</span>The Community Hub is doing <strong>real audience-extension work</strong>. 11.2k pageviews YTD, with Investor and Bespoke audience-themed pages leading. "Striking a balance: CapitalG's Laela Sturdy" is the top article at 618 views — named-investor content travels. February 2026 was the peak month at 3,167 views, aligned with the lead-in to Wade@10. The Hub is the strongest middle-of-funnel asset Wade has.</div>
+  <div class="kpi-row">
+    <div class="kpi-card pink"><div class="kpi-label">Hub pageviews</div><div class="kpi-val" id="h-views">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">GA4</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Unique visitors</div><div class="kpi-val" id="h-users">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">GA4</div></div>
+    <div class="kpi-card"><div class="kpi-label">Top page</div><div class="kpi-val" id="h-top" style="font-size:13px;line-height:1.3">—</div><div class="kpi-delta" id="h-top-d">&nbsp;</div><div class="kpi-source">By views</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Active months</div><div class="kpi-val" id="h-active">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">Period coverage</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="panel"><div class="panel-title">Hub traffic trend</div><div class="panel-sub">Pageviews + unique visitors per month</div><div class="chart-wrap"><canvas id="c-htrend"></canvas></div></div>
+    <div class="panel"><div class="panel-title">Pageviews by audience theme</div><div class="panel-sub">Stacked monthly views</div><div class="chart-wrap"><canvas id="c-htheme"></canvas></div></div>
+  </div>
+  <div class="chart-grid full">
+    <div class="panel"><div class="panel-title">Top 15 hub destinations</div><div class="panel-sub">Highest-traffic listing pages</div>
+      <table class="tbl" id="hub-table"><thead><tr><th>Page</th><th>Theme</th><th class="num">Views</th><th class="num">Users</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+  <div class="chart-grid full">
+    <div class="panel"><div class="panel-title">Top articles</div><div class="panel-sub">Highest-traffic individual story slugs, theme-tagged from URL keywords</div>
+      <table class="tbl" id="hub-articles"><thead><tr><th>Article</th><th>Theme</th><th class="num">Views</th><th class="num">Users</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-edm">
+  <div class="narrative"><span class="nrv-label">What's happening</span>The Wade-listed audience is <strong>21.9k strong; 8.9k (41%) opened at least one email in the last 12 months, and 8.1k (37%) opened since Jan 1</strong>. 2,940 contacts clicked in 12mo, 2,359 clicked YTD — those are your high-intent cohort. ~10.9k "Cold leads" (received emails but never opened) and 2.1k "Untouched" (never received any) are the deliverability and activation priorities. Switch the period toggle (top right) to compare 12mo vs YTD.</div>
+  <div class="callout"><strong>Note:</strong> Contact-level view of email engagement, drawn from HubSpot Contact properties (last send / last open / last click). Per-campaign aggregates (open rate, CTR, unsubscribes, bounces) require a HubSpot OAuth scope upgrade (Marketing / Content) — that view will appear here once unlocked. <em>Scope: Wade-listed contacts only (Wade / VCC / MoE / UpSchool / In Residence / Register Interest lists).</em></div>
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Emailable contacts</div><div class="kpi-val" id="e-total">—</div><div class="kpi-delta" id="e-total-d">&nbsp;</div><div class="kpi-source">HubSpot Wade lists</div></div>
+    <div class="kpi-card teal"><div class="kpi-label" id="e-active-lbl">Openers · 12mo</div><div class="kpi-val" id="e-active">—</div><div class="kpi-delta" id="e-active-d">&nbsp;</div><div class="kpi-source">Contact last open date</div></div>
+    <div class="kpi-card pink"><div class="kpi-label" id="e-click-lbl">Click-engaged · 12mo</div><div class="kpi-val" id="e-click">—</div><div class="kpi-delta" id="e-click-d">&nbsp;</div><div class="kpi-source">Contact last click date</div></div>
+    <div class="kpi-card lavender"><div class="kpi-label" id="e-never-lbl">No 12mo activity</div><div class="kpi-val" id="e-never">—</div><div class="kpi-delta" id="e-never-d">&nbsp;</div><div class="kpi-source">No open in window</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="panel"><div class="panel-title">Engagement recency</div><div class="panel-sub" id="edm-recency-sub">Wade-listed contacts bucketed by most recent open</div><div class="chart-wrap"><canvas id="c-edm-recency"></canvas></div></div>
+    <div class="panel"><div class="panel-title">Daily opens · last 90 days</div><div class="panel-sub">Count of contacts whose last open occurred on each day (rolling 90d snapshot)</div><div class="chart-wrap"><canvas id="c-edm-opens"></canvas></div></div>
+  </div>
+  <div class="section-title">Engagement segments · <span class="accent">who to send what to</span></div>
+  <div class="seg-grid" id="edm-segments"></div>
+  <div class="callout"><strong>How segments add up:</strong> In the 12mo view, every contact sits in exactly one bucket (Champions, Active, Slipping, Dormant, Cold, Untouched) — totals reconcile to 21,925. In the YTD view, segments are not mutually exclusive (Recently active is a subset of YTD openers, which is a subset of the audience); they're framed for activation, not bucketing. Switch the period toggle (top right) to compare.</div>
+</section>
+
+<section class="tab-panel" id="tab-organic">
+  <div class="narrative"><span class="nrv-label">What's happening</span>Wade's LinkedIn organic is <strong>genuinely strong</strong>. 40,578 unique people reached over 12mo — nearly 2× the size of the emailable audience, materially extending reach beyond the owned list. Engagement rate sits at ~24.6% over 12mo and ~29.1% YTD — both 5–10× the LinkedIn industry benchmark (2–5%). Across the 12-month window, Spotlight and Community themes drove the most engagement; YTD has tilted toward Brand and Recap, with the Wade@10 birthday recap and weekly recaps doing the heavy lifting. Switch the period toggle (top right) to compare.</div>
+  <div class="section-title">LinkedIn reach · <span class="accent">organic Page</span></div>
+  <div class="kpi-row">
+    <div class="kpi-card teal"><div class="kpi-label">Unique people reached</div><div class="kpi-val" id="lr-unique">—</div><div class="kpi-delta" id="lr-unique-d">&nbsp;</div><div class="kpi-source">LinkedIn · unique impressions</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total impressions</div><div class="kpi-val" id="lr-imp">—</div><div class="kpi-delta" id="lr-imp-d">&nbsp;</div><div class="kpi-source">LinkedIn · share impressions</div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Engagement rate</div><div class="kpi-val" id="lr-er">—</div><div class="kpi-delta" id="lr-er-d">&nbsp;</div><div class="kpi-source">Eng ÷ impressions</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Page visitors</div><div class="kpi-val" id="lr-pv">—</div><div class="kpi-delta" id="lr-pv-d">&nbsp;</div><div class="kpi-source">Unique profile views</div></div>
+  </div>
+  <div class="callout"><strong>Engagement rate context:</strong> LinkedIn organic engagement benchmarks are typically 2–5% across industries. Wade's content sits at ~24.6% over 12 months and ~29.1% YTD (March 2026 was a spike month) — roughly 5–10× the benchmark. Reach (the count of unique people who saw at least one Wade post in 12 months) is nearly 2× the size of the emailable audience (21.9k), so LinkedIn is materially extending Wade's addressable surface beyond the owned list.</div>
+
+  <div class="section-title">Theme breakdown · <span class="accent" id="o-period-label">12-month rolling</span></div>
+  <div class="callout"><strong>How to read this:</strong> Posts are classified across the approved seven-theme taxonomy. Engagement rate divides total engagements by total impressions for the selected period. Switch the period control at the top right to compare 12-month rolling vs YTD.</div>
+  <div class="kpi-row">
+    <div class="kpi-card teal"><div class="kpi-label">Posts classified</div><div class="kpi-val" id="o-posts">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source" id="o-posts-src">LinkedIn organic posts</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total engagements</div><div class="kpi-val" id="o-eng">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">Likes+comments+shares</div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Engagement rate</div><div class="kpi-val" id="o-er">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">Eng ÷ impressions</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Top theme</div><div class="kpi-val" id="o-top" style="font-size:13px;line-height:1.3">—</div><div class="kpi-delta" id="o-top-d">&nbsp;</div><div class="kpi-source">By engagement</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="panel"><div class="panel-title">Theme taxonomy</div><div class="panel-sub">Approved 7-theme classification</div>
+      <table class="tbl" style="margin-top:6px"><thead><tr><th>Theme</th><th>Strategic intent</th></tr></thead><tbody>
+        <tr><td><span class="tag" style="background:#F15A22">Program intake</span></td><td>VC Catalyst, Growth Engine, MoE, EiR/IiR enrolment</td></tr>
+        <tr><td><span class="tag" style="background:#E4E517;color:#2E2541">Wade@10 / Brand</span></td><td>10th anniversary, origin story, Peter Wade content</td></tr>
+        <tr><td><span class="tag" style="background:#9C8AB8">Events</span></td><td>Fireside chats, panels, masterclasses</td></tr>
+        <tr><td><span class="tag" style="background:#7AC4C5">Weekly Recap</span></td><td>"A week in #Wade" team activity posts</td></tr>
+        <tr><td><span class="tag" style="background:#27BDBE">Industry insights</span></td><td>Funding reports, ecosystem analysis</td></tr>
+        <tr><td><span class="tag" style="background:#ED3694">Community</span></td><td>Alumni, EiR/IiR, Community Collective</td></tr>
+        <tr><td><span class="tag" style="background:#B8B5CC;color:#2E2541">Spotlight</span></td><td>Founder &amp; investor stories</td></tr>
+      </tbody></table>
+    </div>
+    <div class="panel"><div class="panel-title">Theme distribution · sample</div><div class="panel-sub">Posts in each theme (90-day sample)</div><div class="chart-wrap"><canvas id="c-themes"></canvas></div></div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-studio">
+  <div class="narrative"><span class="nrv-label">What's happening</span>The Studio acquired <strong>336 unique users in the last 90 days, but only 12 have completed a tool and 4 have saved their work</strong>. May 2026 user volume is up (209 vs 159 in April), but engagement quality has <strong>collapsed</strong> — bounce rate jumped from 48.9% to 64.8% and average session time dropped from ~12 min to ~3.5 min. The funnel below shows the bleed: 540 sessions → 98 selected a tool → 40 started filling it in → 34 completed. The real heroes are the 12 power users generating 70 reports between them.</div>
+  <div class="callout"><strong>About this tab.</strong> Data sources: GA4 hostname <code>studio.wadeinstitute.org.au</code> · last 3 months. Tool usage below is split into three intent types: <strong>Browse</strong> (viewed the /tool-detail-* info page), <strong>Use</strong> (loaded the /canvas-* page = actually engaging with the tool), <strong>Launch</strong> (entered the in-app tool via /index.html?tool=). <strong>Hotjar was just installed (13 May 2026)</strong> — heatmaps and session recordings will start populating soon and help explain where the homepage drop-off happens.</div>
+  <div class="kpi-row">
+    <div class="kpi-card purple"><div class="kpi-label">Studio users · 90d</div><div class="kpi-val" id="st-users">—</div><div class="kpi-delta" id="st-users-d">&nbsp;</div><div class="kpi-source">GA4 unique users</div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Bounce rate · May</div><div class="kpi-val" id="st-bounce">—</div><div class="kpi-delta" id="st-bounce-d">&nbsp;</div><div class="kpi-source">vs April</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Completions · 90d</div><div class="kpi-val" id="st-completions">—</div><div class="kpi-delta" id="st-completions-d">&nbsp;</div><div class="kpi-source">session_completed events</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Power users</div><div class="kpi-val" id="st-power">—</div><div class="kpi-delta" id="st-power-d">&nbsp;</div><div class="kpi-source">Generated ≥1 report</div></div>
+  </div>
+
+  <div class="section-title">User journey · <span class="accent">visit → complete</span></div>
+  <div class="callout"><strong>How to read this:</strong> Each row shows unique users at that stage of the workflow. Big drops between rows = bleed points. <strong>The visit → select step loses 84% of users</strong> (336 → 53) — most arrivals don't even pick a tool. <strong>The select → start step loses another 66%</strong> (53 → 18). But once people <em>start</em> filling in a tool, 67% complete it. The fix is at the top of the funnel, not the bottom. Hotjar (just installed) will reveal what's happening on the homepage that's causing the first drop.</div>
+  <div class="chart-grid full">
+    <div class="panel studio"><div class="panel-title">Studio funnel · unique users</div><div class="panel-sub">GA4 custom events · last 3 months</div><div class="chart-wrap"><canvas id="c-studio-funnel"></canvas></div></div>
+  </div>
+
+  <div class="section-title">Engagement quality · <span class="accent">April vs May</span></div>
+  <div class="chart-grid">
+    <div class="panel studio"><div class="panel-title">User volume vs engagement quality</div><div class="panel-sub">Users grew Apr→May but bounce rate jumped and engagement dropped</div><div class="chart-wrap"><canvas id="c-studio-trend"></canvas></div></div>
+    <div class="panel studio"><div class="panel-title">Tool usage · top 15</div><div class="panel-sub">Browse (info-page views) vs Use (canvas-page sessions) — stacked</div><div class="chart-wrap tall"><canvas id="c-studio-tools"></canvas></div></div>
+  </div>
+
+  <div class="section-title">All Studio tools · <span class="accent">browse / use / launch</span></div>
+  <div class="chart-grid full">
+    <div class="panel studio"><div class="panel-title">Tool engagement by intent</div><div class="panel-sub">Browse = /tool-detail-* views (just looking) · Use = /canvas-* sessions (actually using) · Users using = unique users on canvas · Launch = in-app ?tool= URL · Sorted by Use descending</div>
+      <table class="tbl" id="studio-tools-table"><thead><tr><th>Tool</th><th class="num">Browse</th><th class="num">Use</th><th class="num">Users</th><th class="num">Launch</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="callout"><strong>Power users matter most.</strong> 12 unique users have generated 70 reports between them (~5.8 reports each). 9 downloaded their reports, 8 shared them, 8 downloaded a slide deck. Only <strong>4 users have saved their work</strong> and only <strong>6 have come back to a saved session</strong> — the save/resume flow is barely used. <strong>Top tools by canvas usage (the real signal):</strong> Jobs to Be Done (7 unique users), Lean Canvas (5), How Might We (4), Flywheel (4). These are the tools to feature when promoting the Studio — not the highest-browsing tools (Five Whys, Lean Canvas) which include people just reading the info page.</div>
+</section>
+
+<section class="tab-panel" id="tab-pages">
+  <div class="narrative"><span class="nrv-label">What's happening</span><strong>The site's most "sticky" pages are program landing pages and About — not articles.</strong> The VC Catalyst application page holds users for ~60s on average (form completion), About averages 38s, Growth Engine 35s, VCC main 27s. Articles register high "engagement rate" by GA4's definition but most users land, read, leave — single-page sessions with very short measured time. The biggest concern: <strong>the Growth Engine ad-tracked landing URL has a 70% bounce rate</strong> — paid traffic isn't sticking. UpSchool Complete also bounces at 62%. These are the two pages to optimise first.</div>
+
+  <div class="callout"><strong>About this tab.</strong> Engagement metrics direct from GA4 — pageviews, sessions, total engagement time, engagement rate (GA4 defines "engaged" as a session with &gt;10s duration, &gt;1 pageview, or a conversion event) and bounce rate. <strong>"Avg time" below</strong> = total engagement seconds ÷ sessions for that page. For per-page click tracking (CTA clicks, scroll depth, form interactions), GA4 events would need to be configured — none surfaced here currently. Heatmaps/recordings would require Hotjar (not connected).</div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Site-wide avg time</div><div class="kpi-val" id="pg-avg-time">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source" id="pg-avg-time-src">Per session</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Avg engagement rate</div><div class="kpi-val" id="pg-avg-eng">—</div><div class="kpi-delta">&nbsp;</div><div class="kpi-source">Weighted across top pages</div></div>
+    <div class="kpi-card yellow"><div class="kpi-label">Stickiest page</div><div class="kpi-val" id="pg-sticky-name" style="font-size:14px;line-height:1.3">—</div><div class="kpi-delta" id="pg-sticky-time">&nbsp;</div><div class="kpi-source" id="pg-sticky-path">—</div></div>
+    <div class="kpi-card pink"><div class="kpi-label">Highest bounce</div><div class="kpi-val" id="pg-bounce-name" style="font-size:14px;line-height:1.3">—</div><div class="kpi-delta warn" id="pg-bounce-rate">&nbsp;</div><div class="kpi-source" id="pg-bounce-note">—</div></div>
+  </div>
+
+  <div class="chart-grid full">
+    <div class="panel"><div class="panel-title">Top 15 pages by total engagement time</div><div class="panel-sub">The pages where Wade is accumulating the most attention overall (engagement time × sessions). Helps identify where the audience is genuinely spending time.</div>
+      <table class="tbl" id="pg-top-table"><thead><tr><th>Page</th><th class="num">Views</th><th class="num">Sessions</th><th class="num">Avg time / session</th><th class="num">Engagement rate</th><th class="num">Bounce rate</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="chart-grid full">
+    <div class="panel" style="border-left:3px solid var(--wade-pink)"><div class="panel-title" style="color:var(--wade-pink)">High-bounce pages · &gt;30% bounce on meaningful traffic</div><div class="panel-sub">Pages where visitors land and leave without engaging. These are the priorities for content / UX work — particularly any with paid traffic landing on them.</div>
+      <table class="tbl" id="pg-bounce-table"><thead><tr><th>Page</th><th class="num">Views</th><th class="num">Bounce rate</th><th>Notes</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="callout"><strong>What this isn't:</strong> GA4 doesn't track CTA clicks, scroll depth or form field interactions out of the box — those would need custom events in GA4 Admin. For visual analysis (heatmaps, session recordings, click maps), Hotjar would be the right tool (not currently connected). The metrics here answer "are people actually reading?" not "what are they clicking?"</div>
+</section>
+
+<section class="tab-panel" id="tab-defs">
+  <div class="callout"><strong>Definitions, sources and attribution policy.</strong> Every metric on this dashboard with the source field that produces it, the filters applied, and the business rules behind it. If a number on the dashboard surprises you, look here first.</div>
+
+  <div class="section-title">Data sources · <span class="accent">where the numbers come from</span></div>
+  <div class="panel">
+    <table class="tbl"><thead><tr><th>System</th><th>What we pull</th><th>Account ID</th><th>Refresh</th></tr></thead><tbody>
+      <tr><td><strong>GA4</strong></td><td>Site sessions, users, channels, page paths, hostname filters</td><td>392602094</td><td>Weekly</td></tr>
+      <tr><td><strong>Google Ads</strong></td><td>Campaign spend, impressions, clicks, conversions</td><td>5602208640</td><td>Weekly</td></tr>
+      <tr><td><strong>LinkedIn Ads</strong></td><td>Campaign spend, impressions, clicks</td><td>507806384</td><td>Weekly</td></tr>
+      <tr><td><strong>LinkedIn Pages</strong></td><td>Organic posts, page reach, engagements, new followers</td><td>6574862</td><td>Weekly</td></tr>
+      <tr><td><strong>Meta Ads</strong></td><td>Campaign spend, impressions, clicks</td><td>act_480515668956989</td><td>Weekly (historically empty)</td></tr>
+      <tr><td><strong>Instagram Insights</strong></td><td>Follower count, reach</td><td>17841402136850329</td><td>Weekly</td></tr>
+      <tr><td><strong>HubSpot</strong></td><td>Deals, contacts, lifecycle stages, email engagement (contact-level)</td><td>442236365 (Wade-only filters)</td><td>Weekly</td></tr>
+      <tr><td><strong>Supermetrics MCP</strong></td><td>API wrapper around all of the above</td><td>Team ormond (1007822)</td><td>Live (paid subscription)</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section-title">Metric definitions · <span class="accent">what each KPI means</span></div>
+  <div class="panel">
+    <table class="tbl"><thead><tr><th>Metric</th><th>Definition</th><th>Source field</th><th>Notes</th></tr></thead><tbody>
+      <tr><td><strong>Site users</strong></td><td>Unique users with at least one session on wadeinstitute.org.au in the period</td><td>GA4 · totalUsers</td><td>Cookie-based; respects Wade's GA4 consent settings</td></tr>
+      <tr><td><strong>Page visits / Sessions</strong></td><td>GA4 sessions on Wade properties</td><td>GA4 · sessions</td><td>—</td></tr>
+      <tr><td><strong>Channel</strong></td><td>GA4's default channel grouping for each session (Direct, Organic Search, Paid Search, etc.)</td><td>GA4 · sessionDefaultChannelGrouping</td><td>GA4 attribution defaults</td></tr>
+      <tr><td><strong>Conversions</strong></td><td><em>Currently HIDDEN</em> — see Things to know. GA4 counts all "key events" including outbound clicks/file downloads, so the number is inflated and not real-lead-equivalent.</td><td>GA4 · conversions</td><td>Real fix pending event-name filter</td></tr>
+      <tr><td><strong>Paid spend</strong></td><td>Sum of Google Ads + LinkedIn Ads + Meta Ads cost, in AUD, period-filtered</td><td>AW + LIA + FA · cost / spend</td><td>Meta historically empty</td></tr>
+      <tr><td><strong>Closed-won deals</strong></td><td>Count of HubSpot deals in Wade pipelines with stage = closed won</td><td>HS · deal_closed_won</td><td>Filter: <code>deal_pipeline =@ Wade</code></td></tr>
+      <tr><td><strong>Closed-won value</strong></td><td>Sum of deal amount on closed-won Wade deals (AUD)</td><td>HS · deal_amount_closed_won</td><td>Excludes Ormond Residential pipeline</td></tr>
+      <tr><td><strong>LinkedIn unique reach</strong></td><td>Distinct LinkedIn users who saw at least one Wade post in the last 12 months</td><td>LIP · total_share_impressions_unique</td><td><strong>Fixed 12mo lookback — LinkedIn API doesn't accept date range here</strong></td></tr>
+      <tr><td><strong>LinkedIn engagement rate</strong></td><td>Sum of monthly page engagements ÷ sum of monthly page impressions × 100. Period-filterable.</td><td>LIP · page_engagements / page_impressions</td><td>Industry benchmark 2–5%</td></tr>
+      <tr><td><strong>Page visitors (LinkedIn)</strong></td><td>Unique people who visited the Wade Page profile (not the same as post reach)</td><td>LIP · unique_page_views</td><td>—</td></tr>
+      <tr><td><strong>Emailable audience</strong></td><td>Current count of Wade-listed HubSpot contacts (snapshot, not period-based)</td><td>HS · contact_total_count (filtered)</td><td>Filter: <code>contact_list_name</code> contains Wade / VCC / MoE / UpSchool / In Residence / Register Interest</td></tr>
+      <tr><td><strong>Active email · 30d</strong></td><td>Wade-listed contacts whose last marketing email open is within 30 days of today</td><td>HS · contact_email_last_open_date</td><td><strong>Apple MPP inflates 20–40%</strong></td></tr>
+      <tr><td><strong>Champions</strong></td><td>Wade-listed contacts whose last marketing email <em>click</em> is within 30 days</td><td>HS · contact_email_last_click_date</td><td>Not affected by MPP — clicks are real intent</td></tr>
+      <tr><td><strong>Active readers</strong></td><td>Opened in 30d but didn't click</td><td>derived</td><td>Subset of Active email · 30d</td></tr>
+      <tr><td><strong>Slipping / Dormant / Lost</strong></td><td>Last open 31–90 / 91–180 / 180+ days ago respectively</td><td>derived from HS · last_open_date</td><td>Mutually exclusive tiers</td></tr>
+      <tr><td><strong>Cold leads</strong></td><td>Contacts who have received marketing emails but have no recorded open</td><td>derived (has last_email_name, no last_open_date)</td><td>Mostly the Nov 2025 Mailchimp import</td></tr>
+      <tr><td><strong>Untouched</strong></td><td>Contacts who have never received a Wade marketing email</td><td>derived (no last_email_name)</td><td>Activation opportunity</td></tr>
+      <tr><td><strong>Studio users</strong></td><td>GA4 users on hostname studio.wadeinstitute.org.au</td><td>GA4 · totalUsers (filtered)</td><td>Tracking began April 2026 — pre-April months = 0 because of measurement gap</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section-title">Filters & attribution policies · <span class="accent">the business rules</span></div>
+  <div class="panel">
+    <table class="tbl"><thead><tr><th>Rule</th><th>Definition</th></tr></thead><tbody>
+      <tr><td><strong>Wade-only HubSpot</strong></td><td>Deals: <code>deal_pipeline =@ Wade</code> (catches both <em>Wade - Sales Pipeline</em> and <em>Wade - MoE Pipeline</em>). Contacts: <code>contact_list_name</code> contains <em>Wade / VCC / MoE / UpSchool / In Residence / Register Interest</em>.</td></tr>
+      <tr><td><strong>Studio scope</strong></td><td>GA4 <code>hostName == studio.wadeinstitute.org.au</code> only. Excludes the main wadeinstitute.org.au site.</td></tr>
+      <tr><td><strong>Hub scope</strong></td><td>GA4 <code>pagePath</code> contains <code>/category/news</code> OR <code>/community</code> OR <code>/category/alumni</code>. Top articles table covers individual story slugs at the root.</td></tr>
+      <tr><td><strong>Timezone</strong></td><td>All GA4 queries use <code>Australia/Melbourne</code> so day boundaries match Wade's native GA4 UI. Without this, sessions near midnight shift by 10–11h.</td></tr>
+      <tr><td><strong>Period definitions</strong></td><td><strong>YTD</strong> = 1 Jan 2026 → today. <strong>Rolling 12 months</strong> = the 12 calendar months ending today, inclusive.</td></tr>
+      <tr><td><strong>Program-level spend attribution</strong></td><td>Spend assigned to a program <strong>only where directly attributable</strong> (e.g., VC Catalyst has its own Google Ads campaign "MT - S - W - VC Catalyst - Enrolment"). Programs without a dedicated campaign show $0 spend.</td></tr>
+      <tr><td><strong>Audience-level spend rollup</strong></td><td>Audience-archetype Google Ads campaigns (<em>1-26 INVESTOR</em>, <em>1-26 FOUNDER AND INNOVATOR</em>, <em>1-26 CORPORATE AND INTRAPRENEURSHIP</em>) stay bundled at the audience card. They are NOT pro-rata'd into individual programs.</td></tr>
+      <tr><td><strong>LinkedIn → VCC</strong></td><td>All LinkedIn Ads spend attributed to VC Catalyst by inference (Wade's only paid LinkedIn program). Flagged as "inferred" — will change once LinkedIn campaigns are tagged per-program.</td></tr>
+      <tr><td><strong>Program keyword mapping</strong></td><td>HubSpot deals categorised by <code>deal_name</code> keyword: <em>VC Catalyst / VCC</em> → vc; <em>VC Fundamentals / VCF</em> → vcf; <em>Growth Engine</em> → ge; <em>AI Conundrum</em> → ai; <em>Impact Catalyst</em> → ic; <em>UpSchool / Haileybury</em> → up; <em>Think Like</em> → tle; <em>Bespoke / PAN Group / CBA Bespoke</em> → besp; <em>Wade Inc</em> → winc; <em>In Residence</em> → eir; <em>AgVentures</em> → agv. Deals in Wade - MoE Pipeline → moe.</td></tr>
+      <tr><td><strong>Audience roll-ups</strong></td><td><strong>Founders</strong> = MoE + Wade Inc + EiR. <strong>Org Innovators</strong> = TLE + AI Conundrum + Growth Engine + Bespoke. <strong>Investors</strong> = VCC + VCF + Impact Catalyst + Ag Ventures. <strong>Educators</strong> = UpSchool.</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="section-title">Refresh cadence · <span class="accent">when data updates</span></div>
+  <div class="panel">
+    <table class="tbl"><thead><tr><th>Asset</th><th>Cadence</th><th>Location</th></tr></thead><tbody>
+      <tr><td><strong>Live dashboard</strong></td><td>Weekly · Mondays 7:04am AEST</td><td><code>Wade_Master_Dashboard_YYYY-MM-DD.html</code> in Dashboards folder</td></tr>
+      <tr><td><strong>Email-safe version</strong></td><td>Weekly (same task)</td><td><code>Wade_Master_Dashboard_Email.html</code></td></tr>
+      <tr><td><strong>Teams share message</strong></td><td>Weekly · plain text for manual paste</td><td><code>Wade_Master_Dashboard_Share_YYYY-MM-DD.txt</code></td></tr>
+      <tr><td><strong>Scheduled task definition</strong></td><td>Hand-edited as needed</td><td><code>SKILL.md</code> in project folder <em>(Wade Insights Agent)</em></td></tr>
+      <tr><td><strong>Supermetrics subscription</strong></td><td>Renewal due 14 May 2026 — currently flagged in Things to know</td><td>hub.supermetrics.com/subscriptions/1720236</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-known">
+  <div class="callout"><strong>Data quality log.</strong> Every known issue with the numbers on this dashboard — what's wrong, why it matters, and the next move. Severity reflects how much each issue can mislead a decision-maker. Status tags split into <strong>In progress</strong> (mitigated or partly fixed, full fix still pending), <strong>Needs you</strong> (your action), <strong>Bigger project</strong>, <strong>Won't fix</strong> (genuine limitation), and <strong>Fixed</strong>.</div>
+
+  <div class="summary-strip">
+    <div class="sum-card"><div class="sum-val">4</div><div class="sum-label">In progress</div></div>
+    <div class="sum-card"><div class="sum-val">4</div><div class="sum-label">Need you</div></div>
+    <div class="sum-card"><div class="sum-val">0</div><div class="sum-label">Bigger project</div></div>
+    <div class="sum-card"><div class="sum-val">4</div><div class="sum-label">Won't fix</div></div>
+    <div class="sum-card"><div class="sum-val">3</div><div class="sum-label">Fixed</div></div>
+  </div>
+
+  <div class="section-title">High severity · <span class="accent">numbers that mislead</span></div>
+  <div class="issues-grid">
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">GA4 "conversions" definition under review</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-can">In progress</span>
+        </div>
+      </div>
+      <div class="issue-body"><strong>Conversions metric is HIDDEN on the Performance tab</strong> pending a real definition. The KPI card and trend chart now show "Definition under review" placeholders. The underlying GA4 <code>conversions</code> field counts every key event (outbound clicks, file downloads, scroll events) — April Direct showed 7,000 conversions, 17× the next month, almost certainly because of this. The visual mislead is mitigated; the real metric is still missing.</div>
+      <div class="issue-fix"><span class="fix-label">Real fix</span>Confirm with Kim which GA4 event names = real leads (likely <code>form_submit</code>, <code>generate_lead</code>, or a custom event). Then update the scheduled task to query <code>eventCount</code> filtered to those events, swap the placeholder for the real KPI/chart, and move this entry to Fixed.</div>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-head">
+        <div class="issue-title">Supermetrics trial expires 14 May 2026</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-high">High</span>
+          <span class="issue-tag t-you">Needs you</span>
+        </div>
+      </div>
+      <div class="issue-body"><strong>Every Supermetrics API response is returning a notice that the trial expires in 2 days.</strong> Without renewal, next Monday's scheduled refresh will fail to pull GA4, Google Ads, LinkedIn, HubSpot or any other source — the dashboard will sit frozen at today's snapshot until the subscription is renewed.</div>
+      <div class="issue-fix"><span class="fix-label">You</span>Renew at <strong>https://hub.supermetrics.com/subscriptions/1720236</strong> before 14 May. Team is "Team ormond" (id 1007822).</div>
+    </div>
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">Partial-month bars — headlines fixed, charts still affected</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-can">In progress</span>
+        </div>
+      </div>
+      <div class="issue-body"><strong>Headlines fixed:</strong> All Overview headlines now use weekly run-rate framing ($125/week vs $360/week) — avoids the bias when scanning the strategic read. <strong>Charts still affected:</strong> the monthly bar charts on Performance, Full Funnel, Hub and Studio still show the partial current month as a stubby bar next to full prior months. Anyone reading the charts directly (not the headlines) still gets the false-decline illusion.</div>
+      <div class="issue-fix"><span class="fix-label">Remaining fix</span>Switch trend charts from monthly to weekly bars so partial periods become small obvious slivers rather than disguised half-months. Requires a re-query at weekly granularity. ~1 session of work.</div>
+    </div>
+
+    <div class="issue sev-high">
+      <div class="issue-head">
+        <div class="issue-title">November 2025 Mailchimp bulk import skews lifecycle</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-high">High</span>
+          <span class="issue-tag t-can">Quick fix</span>
+        </div>
+      </div>
+      <div class="issue-body"><strong>19,277 "lead" lifecycle contacts in Nov 2025</strong> — this is the historical Mailchimp migration, not organic acquisition. Already flagged in a callout on the Performance tab. Inflates the 12-month audience total. Excluded from the YTD view (which is cleaner). Also drives the 12,953 "never opened" contacts on the EDM tab.</div>
+      <div class="issue-fix"><span class="fix-label">Fix</span>Add a filter to the HubSpot lifecycle query that excludes contacts whose original source is Mailchimp import, or just drop Nov 2025 from the audience chart with a footnote.</div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Medium severity · <span class="accent">missing or stale data</span></div>
+  <div class="issues-grid">
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">Meta Ads always empty</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-you">Needs you</span>
+        </div>
+      </div>
+      <div class="issue-body">Facebook Ads (act_480515668956989) returns zero rows every refresh. Either the account isn't running campaigns, the ad-account ID has rotated, or the Supermetrics→Meta connection has expired. The Paid Spend chart shows a zero pink stack as a result.</div>
+      <div class="issue-fix"><span class="fix-label">You</span>5-min check inside Facebook Business Manager — is there an active campaign on this account? If yes and it's still empty, re-authorise the Supermetrics connection. I'll re-test once you confirm.</div>
+    </div>
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">LinkedIn Ads March 2026 anomaly</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-you">Needs you</span>
+        </div>
+      </div>
+      <div class="issue-body"><strong>663,262 impressions, 145 clicks, $422 spend</strong> in March 2026 — a 0.02% CTR is unusually low. Either a real bad-fit campaign or a tracking artifact. The single row inflates the LinkedIn impressions line.</div>
+      <div class="issue-fix"><span class="fix-label">You</span>Quick eyeball in LinkedIn Campaign Manager — did a March campaign actually spend that with those numbers? If artifact, I can filter out the row.</div>
+    </div>
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">Hub article-level data — refresh added, awaiting next Monday</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-can">In progress</span>
+        </div>
+      </div>
+      <div class="issue-body">The "Top articles" table on the Community Hub tab is still showing the prior snapshot. <strong>SKILL.md updated:</strong> query (v) added so next Monday's scheduled refresh will re-pull the top article slugs. Until that runs, the table is up to a week behind the rest of the dashboard.</div>
+      <div class="issue-fix"><span class="fix-label">Awaiting</span>Next Monday's automatic refresh. After that run lands fresh data, move this entry to Fixed.</div>
+    </div>
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">EDM per-campaign performance locked</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-you">Needs you</span>
+        </div>
+      </div>
+      <div class="issue-body">The EDM tab shows contact-level engagement (last open / last click / last email name). True per-campaign metrics — <strong>open rate, CTR, unsubscribes, bounces, A/B variation</strong> — need HubSpot's <code>content</code> OAuth scope on the Supermetrics connection. Current connection has CRM scopes only.</div>
+      <div class="issue-fix"><span class="fix-label">You</span>HubSpot → Settings → Integrations → Connected apps → Supermetrics → re-authorise, tick "Marketing"/"Content" permissions. ~5 mins. Once done I'll build the full EDM Performance section.</div>
+    </div>
+
+    <div class="issue sev-med">
+      <div class="issue-head">
+        <div class="issue-title">Hotjar just installed — recordings & heatmaps not yet in dashboard</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag t-can">In progress</span>
+        </div>
+      </div>
+      <div class="issue-body"><strong>Hotjar installed on 13 May 2026</strong> on studio.wadeinstitute.org.au (and ideally wadeinstitute.org.au too — confirm). This will fill the biggest gap in the current GA4-only view: <em>why</em> 84% of Studio visitors don't pick a tool, and <em>where</em> on the homepage they drop. GA4 can tell us the funnel collapses at visit→select; Hotjar will show whether it's a UX problem (CTA not visible, wrong messaging, mobile broken), a content problem (people read the homepage and leave because nothing resonates), or a tech problem (slow load, JS error). Hotjar data won't appear on this dashboard for ~1–2 weeks while the recording library fills up.</div>
+      <div class="issue-fix"><span class="fix-label">Next</span>Once Hotjar has ~50 recordings and a homepage heatmap, add a Hotjar tab to the dashboard (or embed key insights into the Studio tab) with: (1) top 5 click hotspots on /, (2) scroll depth distribution, (3) rage-click count, (4) link to recent recordings of users who bounced. Supermetrics doesn't have a Hotjar connector, so this will be a manual paste each Monday — or we can use the Hotjar API directly via a small fetch script. Decide approach after first 2 weeks of data.</div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Low severity · <span class="accent">context, not bugs</span></div>
+  <div class="issues-grid">
+
+    <div class="issue sev-fixed">
+      <div class="issue-head">
+        <div class="issue-title">Funnel program/audience cards are static</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag" style="background:#9C8AB8">Fixed</span>
+        </div>
+      </div>
+      <div class="issue-body">Program Funnels and Audience Funnels tabs previously used a May 2026 baseline. Now refreshed weekly: HubSpot deals filtered by deal_name keywords per program, GA4 sessions filtered by program URL patterns, Google Ads matched by campaign name, LinkedIn inferred to VC Catalyst.</div>
+      <div class="issue-fix"><span class="fix-label">Done</span>Attribution policy locked: program-level spend only where directly attributable; audience-archetype campaign spend stays bundled at the audience card. Both Funnel tabs now carry the <strong>Live</strong> badge. LinkedIn → VCC attribution is "inferred" and will move once LinkedIn campaigns get program-tagged.</div>
+    </div>
+
+    <div class="issue sev-low">
+      <div class="issue-head">
+        <div class="issue-title">Studio app only measurable from April 2026</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag t-no">Won't fix</span>
+        </div>
+      </div>
+      <div class="issue-body">GA4 hostname tracking on <code>studio.wadeinstitute.org.au</code> wasn't wired up before April. Pre-April Studio months show as zero in the trend chart — Studio wasn't dead, just not measured.</div>
+      <div class="issue-fix"><span class="fix-label">Context</span>Historical data doesn't exist and can't be recovered. Already noted in a callout under the Studio chart.</div>
+    </div>
+
+    <div class="issue sev-low">
+      <div class="issue-head">
+        <div class="issue-title">Instagram followers only May 2026</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag t-no">Won't fix</span>
+        </div>
+      </div>
+      <div class="issue-body">Supermetrics' <code>followers_count</code> field is a point-in-time snapshot — earlier months show <code>null</code>. The "3,460 IG followers" is a single data point, not a trend. The <code>reach</code> metric is populated for all months except May (opposite gap).</div>
+      <div class="issue-fix"><span class="fix-label">Context</span>Limitation of the Supermetrics→Instagram connector. Could switch to <code>lifetime_followers</code> if available, but no clean way to backfill historical snapshots.</div>
+    </div>
+
+    <div class="issue sev-low">
+      <div class="issue-head">
+        <div class="issue-title">Apple Mail Privacy Protection inflates email opens</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag t-no">Won't fix</span>
+        </div>
+      </div>
+      <div class="issue-body">Since iOS 15 (Sept 2021), Apple Mail pre-fetches images on inbox load, which HubSpot then registers as an "open" — regardless of whether the recipient actually opened the email. Industry estimates put MPP inflation at 20–40% of total opens. <strong>EDM Engagement KPIs (Active 30d = 4,018, Champions, Active readers) are likely overstated by 20–40%</strong>.</div>
+      <div class="issue-fix"><span class="fix-label">Context</span>Platform-level constraint, not a Wade-side bug — affects every B2B email program. Best practice: weight click data more heavily than opens when deciding who's actually engaged. The Champions segment (click-engaged 30d) is unaffected — clicks aren't inflated by MPP. So treat Champions as the trustworthy hot cohort, Active readers as directional.</div>
+    </div>
+
+    <div class="issue sev-low">
+      <div class="issue-head">
+        <div class="issue-title">April 2026 is an outlier, not the new normal</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag t-no">Won't fix</span>
+        </div>
+      </div>
+      <div class="issue-body">Wade@10 birthday + In Residence launch + $1,559 Google Ads push all hit in April. The spike across users, conversions, paid spend and deals is real but exceptional. May numbers (back to baseline) are the truer trajectory.</div>
+      <div class="issue-fix"><span class="fix-label">Context</span>Not a data issue — just worth flagging when reading the charts. Headlines on the Overview tab already note this.</div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Low severity (additional)</div>
+  <div class="issues-grid">
+
+    <div class="issue sev-low">
+      <div class="issue-head">
+        <div class="issue-title">Unknown subdomain `digital.wadeinstitute.org.au` receiving traffic</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag t-you">Needs you</span>
+        </div>
+      </div>
+      <div class="issue-body">GA4 shows 35 users on `digital.wadeinstitute.org.au` over the last 12 months — a subdomain the dashboard's hostname filters don't currently include. Either a legitimate Wade property the dashboard should track, or a stale/dev subdomain to filter out.</div>
+      <div class="issue-fix"><span class="fix-label">You</span>Tell us what `digital.wadeinstitute.org.au` is. If it's a live Wade property, I'll add it to the relevant GA4 queries. If it's stale, I'll filter it out explicitly.</div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Fixed</div>
+  <div class="issues-grid">
+
+    <div class="issue sev-fixed">
+      <div class="issue-head">
+        <div class="issue-title">GA4 timezone mismatch (UTC vs Australia/Melbourne)</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-med">Medium</span>
+          <span class="issue-tag" style="background:#9C8AB8">Fixed</span>
+        </div>
+      </div>
+      <div class="issue-body">Supermetrics was querying GA4 in UTC, while Wade's GA4 property is set to Australia/Melbourne. Sessions near midnight shifted by 10–11 hours, landing in the wrong day or month — caused 5–10% variance vs the GA4 native UI, most visible on small-volume sources like Studio.</div>
+      <div class="issue-fix"><span class="fix-label">Done</span>Added <code>timezone: "Australia/Melbourne"</code> to all GA4 queries in the SKILL.md (queries a, j, k, l, r, v). Next Monday's refresh will produce GA4 numbers that match the native UI.</div>
+    </div>
+
+    <div class="issue sev-fixed">
+      <div class="issue-head">
+        <div class="issue-title">HubSpot lifecycle pseudo-stage "2001489392"</div>
+        <div class="issue-meta">
+          <span class="issue-tag t-sev-low">Low</span>
+          <span class="issue-tag" style="background:#9C8AB8">Fixed</span>
+        </div>
+      </div>
+      <div class="issue-body">Lifecycle query returned 7 contacts in Nov 2025 and 1 in Jan 2026 with an unmapped lifecycle stage ID rather than a name (likely a custom or deleted stage).</div>
+      <div class="issue-fix"><span class="fix-label">Done</span>Filtered out at the data-load layer — only standard lifecycle stages (subscriber / lead / MQL / SQL / opportunity / customer / evangelist / other) are charted.</div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div><strong>Wade Master Dashboard · Static snapshot.</strong> No Cowork or Supermetrics auth required to view. Refreshes Mondays via scheduled task (Performance / Hub / Organic only — funnel sections are static). <strong>Wade-only HubSpot:</strong> deals via <code>deal_pipeline =@ Wade</code>; non-deal contacts via <code>contact_list_name</code> ∈ Wade/VCC/MoE/UpSchool. <strong>Studio</strong> via GA4 <code>hostName == studio.wadeinstitute.org.au</code>.</div>
+</footer>
+
+<script>
+const SNAPSHOT_KEY='wade-master-date';
+const SNAPSHOT_DATE_ISO='2026-05-11';
+const di=document.getElementById('snapshot-date');
+function setDate(iso){const d=new Date(iso+'T00:00:00');if(isNaN(d))return;try{localStorage.setItem(SNAPSHOT_KEY,iso)}catch(e){}}
+let init=SNAPSHOT_DATE_ISO;try{init=localStorage.getItem(SNAPSHOT_KEY)||SNAPSHOT_DATE_ISO}catch(e){}
+di.value=init;setDate(init);di.addEventListener('change',e=>setDate(e.target.value));
+
+// === BAKED DATA ===
+const MONTHS_12M=["2025|06","2025|07","2025|08","2025|09","2025|10","2025|11","2025|12","2026|01","2026|02","2026|03","2026|04","2026|05"];
+const MONTHS_YTD=["2026|01","2026|02","2026|03","2026|04","2026|05"];
+let MONTHS=MONTHS_YTD;
+function buildLabels(arr){return arr.map(m=>{const[y,n]=m.split("|");return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(n,10)-1]+" '"+y.slice(2)})}
+let ML=buildLabels(MONTHS);
+
+const GA4_CHANNELS=[["2025|06","Cross-network",1,1,0],["2025|06","Direct",292,345,45],["2025|06","Email",32,32,0],["2025|06","Organic Search",450,682,40],["2025|06","Organic Social",43,46,2],["2025|06","Paid Search",97,127,9],["2025|06","Referral",68,111,9],["2025|06","Unassigned",6,8,0],["2025|07","Cross-network",1,1,0],["2025|07","Direct",438,511,74],["2025|07","Email",73,85,3],["2025|07","Organic Search",517,821,62],["2025|07","Organic Social",127,145,11],["2025|07","Paid Search",16,21,3],["2025|07","Referral",84,221,13],["2025|07","Unassigned",8,8,3],["2025|08","Cross-network",3,3,3],["2025|08","Direct",372,412,38],["2025|08","Email",21,44,2],["2025|08","Organic Search",511,840,27],["2025|08","Organic Social",38,40,0],["2025|08","Organic Video",1,1,0],["2025|08","Paid Search",80,111,5],["2025|08","Paid Social",63,67,0],["2025|08","Referral",96,299,15],["2025|08","Unassigned",19,24,0],["2025|09","Cross-network",8,10,0],["2025|09","Direct",457,558,33],["2025|09","Email",6,29,0],["2025|09","Organic Search",468,756,29],["2025|09","Organic Social",92,106,5],["2025|09","Paid Search",116,160,4],["2025|09","Paid Social",595,664,0],["2025|09","Referral",65,158,1],["2025|09","Unassigned",45,60,12],["2025|10","Direct",930,1010,1805],["2025|10","Email",7,9,0],["2025|10","Organic Search",565,907,31],["2025|10","Organic Social",40,43,1],["2025|10","Organic Video",2,2,0],["2025|10","Paid Search",22,25,0],["2025|10","Paid Social",183,224,0],["2025|10","Referral",72,144,7],["2025|10","Unassigned",14,23,11],["2025|11","Cross-network",2,2,0],["2025|11","Direct",1506,1626,2077],["2025|11","Email",6,6,1],["2025|11","Organic Search",592,841,37],["2025|11","Organic Social",31,33,3],["2025|11","Paid Other",8,8,0],["2025|11","Paid Search",24,38,3],["2025|11","Paid Social",2,8,0],["2025|11","Referral",60,103,14],["2025|11","Unassigned",100,128,16],["2025|12","Cross-network",2,2,4],["2025|12","Direct",754,819,585],["2025|12","Email",269,285,8],["2025|12","Organic Search",370,517,24],["2025|12","Organic Social",52,53,0],["2025|12","Paid Other",2,2,1],["2025|12","Paid Search",123,137,27],["2025|12","Referral",50,108,3],["2025|12","Unassigned",70,74,1],["2026|01","Cross-network",2,2,0],["2026|01","Direct",795,827,1898],["2026|01","Email",80,107,1],["2026|01","Organic Search",337,483,11],["2026|01","Organic Social",48,48,0],["2026|01","Paid Other",12,13,1],["2026|01","Paid Search",153,172,20],["2026|01","Referral",52,85,4],["2026|01","Unassigned",12,12,0],["2026|02","Cross-network",3,3,1],["2026|02","Direct",1035,1098,2788],["2026|02","Email",31,94,111],["2026|02","Organic Search",404,657,28],["2026|02","Organic Social",89,89,1],["2026|02","Paid Other",7,7,2],["2026|02","Paid Search",102,113,12],["2026|02","Paid Social",2,6,0],["2026|02","Referral",75,127,10],["2026|02","Unassigned",13,15,0],["2026|03","Cross-network",2,2,0],["2026|03","Direct",977,1101,907],["2026|03","Email",162,219,12],["2026|03","Organic Search",587,1035,41],["2026|03","Organic Social",199,218,4],["2026|03","Paid Other",3,3,1],["2026|03","Paid Search",96,112,4],["2026|03","Referral",81,195,8],["2026|03","Unassigned",11,11,0],["2026|04","Cross-network",12,12,25],["2026|04","Direct",1291,1439,7000],["2026|04","Display",620,652,1396],["2026|04","Email",14,16,33],["2026|04","Organic Search",543,865,1155],["2026|04","Organic Social",70,110,201],["2026|04","Paid Other",21,26,47],["2026|04","Paid Search",531,554,992],["2026|04","Referral",88,236,383],["2026|04","Unassigned",16,19,8],["2026|05","Cross-network",1,1,2],["2026|05","Direct",560,608,1539],["2026|05","Display",64,65,139],["2026|05","Email",7,8,16],["2026|05","Organic Search",205,303,508],["2026|05","Organic Social",11,15,27],["2026|05","Paid Other",6,6,12],["2026|05","Paid Search",61,75,147],["2026|05","Referral",22,89,128],["2026|05","Unassigned",7,7,7]];
+
+const GADS=[["2025|06",1555,108,240.47,1],["2025|07",179,13,27.54,0],["2025|08",1534,105,332.34,1],["2025|09",1648,120,380.36,0],["2025|10",386,23,89.74,0],["2025|11",345,38,69.08,0],["2025|12",3132,140,365.76,0],["2026|01",4986,184,364.72,0],["2026|02",3208,127,379.49,0],["2026|03",2245,111,364.56,0],["2026|04",40188,1643,1558.50,1],["2026|05",2917,186,197.27,0]];
+const LIA=[["2025|08",4167,63,328.33,0],["2025|09",53285,655,4061.49,0],["2025|10",12890,180,1209.32,0],["2026|03",663262,145,422.44,0],["2026|04",2797,2,10.22,0]];
+const HS_DEALS=[["2025|11",1,1,20385,20385],["2025|12",4,1,40793,10072],["2026|01",26,19,31475,20144],["2026|02",21,8,94412.20,30216],["2026|03",22,2,324687.80,2996],["2026|04",94,13,779355.49,56157.69],["2026|05",2,1,12590,6295]];
+// Studio acquisition trend · GA4 monthly aggregates (yearMonth, users, sessions, pageviews) — May 2026 refreshed 13 May
+const STUDIO=[["2026|04",159,329,1554],["2026|05",209,267,527]];
+
+// Studio engagement quality · monthly (April and May 2026)
+const STUDIO_QUALITY=[
+  {ym:"2026|04",sessions:329,users:159,newUsers:139,engaged:168,bounceRate:48.94,engRate:51.06,avgDuration:721,views:1554},
+  {ym:"2026|05",sessions:267,users:209,newUsers:180,engaged:94,bounceRate:64.79,engRate:35.21,avgDuration:214,views:527}
+];
+
+// Studio funnel · GA4 custom events (last 3 months, hostname studio.wadeinstitute.org.au)
+const STUDIO_FUNNEL=[
+  {step:1,label:"Visited Studio",events:541,users:336,sessions:540,color:"#9C8AB8"},
+  {step:2,label:"Selected a tool",events:178,users:53,sessions:98,color:"#7A6B8E"},
+  {step:3,label:"Started filling",events:74,users:18,sessions:40,color:"#5D4F70"},
+  {step:4,label:"Completed",events:70,users:12,sessions:34,color:"#4A3F5C"},
+  {step:5,label:"Saved progress",events:24,users:4,sessions:10,color:"#3D3450"},
+  {step:6,label:"Returned to saved",events:58,users:6,sessions:28,color:"#2F2A45"}
+];
+
+// Studio power-user metrics · GA4 custom events
+const STUDIO_REPORTS_GENERATED=70;
+const STUDIO_REPORT_USERS=12;
+const STUDIO_REPORTS_DOWNLOADED=34;
+const STUDIO_REPORT_DL_USERS=9;
+const STUDIO_REPORTS_SHARED=23;
+const STUDIO_REPORT_SHARE_USERS=8;
+const STUDIO_DECKS_DOWNLOADED=24;
+const STUDIO_DECK_DL_USERS=8;
+const STUDIO_SESSIONS_SAVED=24;
+const STUDIO_SESSIONS_SAVED_USERS=4;
+const STUDIO_SESSIONS_RESUMED=58;
+const STUDIO_SESSIONS_RESUMED_USERS=6;
+
+// Studio tool usage · split by intent (last 3 months)
+// Schema: [tool, browse_sessions, use_sessions, use_users, launch_sessions]
+//   browse  = /tool-detail-<tool>.html sessions (viewed info page)
+//   use     = /canvas-<tool>.html sessions (engaged with canvas — the real signal)
+//   users   = unique users on canvas page
+//   launch  = /index.html?tool=<tool> + ?exercise=<tool> sessions (in-app launch)
+// Sorted by `use` descending (real engagement, not browsing)
+const STUDIO_TOOLS=[
+  ["jobs-to-be-done",10,12,7,0],
+  ["flywheel",8,11,4,0],
+  ["lean-canvas",15,11,5,1],
+  ["five-whys",16,9,3,1],
+  ["how-might-we",7,6,4,0],
+  ["empathy-map",9,6,2,2],
+  ["socratic-questioning",7,6,2,0],
+  ["iceberg",8,5,2,0],
+  ["rapid-experiment",8,5,2,2],
+  ["customer-discovery",9,4,3,0],
+  ["effectuation",4,4,2,0],
+  ["theory-of-change",2,4,3,0],
+  ["value-proposition-canvas",6,4,2,2],
+  ["crazy-8s",3,3,3,0],
+  ["scamper",4,3,3,0],
+  ["learning-loop",4,2,1,4],
+  ["worst-possible-idea",5,2,2,1],
+  ["cold-open",4,2,2,0],
+  ["constraint-flip",3,2,2,0],
+  ["pre-mortem",7,1,1,1],
+  ["trade-off",2,1,1,1],
+  ["analogical-thinking",2,1,1,0],
+  ["devils-advocate",2,1,1,0],
+  ["force-field-analysis",2,1,1,0],
+  ["wardley-mapping",3,0,0,1]
+];
+
+const HUB_BY_MONTH={"2025|06":48,"2025|07":89,"2025|08":185,"2025|09":121,"2025|10":392,"2025|11":313,"2025|12":216,"2026|01":1883,"2026|02":3167,"2026|03":1438,"2026|04":2130,"2026|05":217};
+const HUB_USERS_BY_MONTH={"2025|06":41,"2025|07":63,"2025|08":68,"2025|09":68,"2025|10":376,"2025|11":238,"2025|12":171,"2026|01":1693,"2026|02":2777,"2026|03":1207,"2026|04":1896,"2026|05":194};
+const HUB_THEME_BY_MONTH={"2025|06":{alumni:3,investor:1,news:5,community:39},"2025|07":{alumni:4,investor:2,news:5,community:78},"2025|08":{alumni:6,investor:4,news:8,community:167},"2025|09":{alumni:5,investor:5,news:22,entrepreneur:2,community:87},"2025|10":{alumni:11,agtech:1,bespoke:2,entrepreneur:4,investor:2,news:256,community:116},"2025|11":{alumni:6,bespoke:2,entrepreneur:33,investor:2,schools:1,news:208,community:61},"2025|12":{alumni:9,investor:17,schools:9,news:93,agtech:10,bespoke:12,entrepreneur:12,community:54},"2026|01":{alumni:32,agtech:150,bespoke:173,entrepreneur:293,investor:300,schools:152,news:716,community:67},"2026|02":{alumni:56,agtech:246,bespoke:289,entrepreneur:448,investor:488,schools:250,news:1215,community:175},"2026|03":{alumni:40,agtech:89,bespoke:97,entrepreneur:171,investor:163,schools:85,news:444,community:349},"2026|04":{alumni:26,agtech:162,bespoke:178,entrepreneur:305,investor:312,schools:174,news:830,community:143},"2026|05":{alumni:7,agtech:14,bespoke:16,entrepreneur:27,investor:27,schools:15,news:69,community:42}};
+const HUB_PAGES=[["/category/news/",2133,1378,"news"],["/community/",982,592,"community"],["/category/news/audience/bespoke/",759,687,"bespoke"],["/category/news/audience/investor/",741,697,"investor"],["/category/news/audience/entrepreneur/",706,707,"entrepreneur"],["/category/news/page/2/",678,678,"news"],["/category/news/audience/schools/",674,665,"schools"],["/category/news/audience/agtech/",665,665,"agtech"],["/category/news/page/3/",545,544,"news"],["/category/news/audience/investor/page/2/",545,544,"investor"],["/category/news/audience/entrepreneur/page/2/",534,534,"entrepreneur"],["/category/news/page/4/",507,507,"news"],["/community/wade-at-10/",349,233,"community"],["/category/alumni/",190,181,"alumni"],["/category/alumni/audience/entrepreneur/",54,38,"entrepreneur"]];
+const HUB_ARTICLES=[["/striking-a-balance-capitalgs-laela-sturdy-joins-vc-catalyst/",618,619,"investor"],["/student-profile-carlos-journey-from-financier-to-coffee-entrepreneur/",534,524,"alumni"],["/just-start-now-how-annie-zhou-turned-a-school-project-into-a-platform-for-youth-voice/",452,330,"schools"],["/meet-jessica-christiansen-franks-wades-new-director/",362,267,"brand"],["/the-muscle-weve-built-lessons-from-a-decade-of-belief-in-australian-venture/",261,224,"investor"],["/embracing-your-inner-cockroach-and-finding-your-ikigai/",251,207,"entrepreneur"],["/founders-take-wisdom-from-the-wiggles-rayn-ong/",243,192,"entrepreneur"],["/student-story-the-accountant-turned-entrepreneur/",518,506,"alumni"],["/exit-pathways-in-focus-what-australias-startup-ecosystem-needs-next/",211,153,"investor"],["/closing-the-funding-gap-and-commercialising-ai-with-tick-jiang/",159,125,"investor"],["/tando-matandas-vc-journey-and-the-birth-of-musa/",149,128,"investor"],["/from-confusion-to-clarity-how-the-master-of-entrepreneurship-program-helped-one-graduate-design-his-dream-career/",196,180,"alumni"],["/investing-in-agtech-lessons-from-kilimos-journey/",144,122,"agtech"],["/plying-our-own-path-how-australia-is-rewriting-the-venture-capital-playbook/",143,141,"investor"],["/we-have-to-increase-the-rate-of-startup-success-peter-wade-entrepreneur/",139,113,"brand"]];
+const HUB_THEME_LABELS={entrepreneur:"Entrepreneur",investor:"Investor",agtech:"Agtech",schools:"Schools",alumni:"Alumni",bespoke:"Bespoke",community:"Community/W@10",news:"News",brand:"Brand"};
+const HUB_THEME_COLORS={entrepreneur:"#F15A22",investor:"#27BDBE",agtech:"#7AC4C5",schools:"#E4E517",alumni:"#B8B5CC",bespoke:"#9C8AB8",community:"#ED3694",news:"#6E5B8A",brand:"#ED3694"};
+
+// LinkedIn Reach · period-toggleable · LinkedIn Page totals
+// Note: unique_reach (total_share_impressions_unique) is intrinsically 12mo per LinkedIn API
+const LIP_REACH={
+  unique_reach:40578,  // 12-month rolling — LinkedIn API constraint, not period-toggleable
+  // monthly arrays power the cover summary engagement-rate calc (filtered by MONTHS)
+  monthly_impressions:[["2025|06",8489],["2025|07",11862],["2025|08",4747],["2025|09",6549],["2025|10",6685],["2025|11",3871],["2025|12",2640],["2026|01",1574],["2026|02",2415],["2026|03",11179],["2026|04",4762],["2026|05",3758]],
+  monthly_engagements:[["2025|06",2980],["2025|07",2119],["2025|08",630],["2025|09",590],["2025|10",1233],["2025|11",896],["2025|12",541],["2026|01",265],["2026|02",300],["2026|03",3637],["2026|04",1283],["2026|05",1146]],
+  // Page metric totals · period-toggleable
+  total_page_views_12m:4047, unique_page_views_12m:2250, followers_gained_12m:675,
+  total_page_views_ytd:1592, unique_page_views_ytd:880, followers_gained_ytd:231
+};
+
+// Organic Content · period-toggleable theme aggregates
+// 12mo = May 2025 – May 2026 · 56 classified posts · YTD = Jan 1 – May 11 2026 · 17 classified posts
+const ORGANIC_STATS_12M={
+  posts:56, total_impressions:69006, total_engagements:16954, engagement_rate:24.6,
+  theme_count:{brand:7,"program-intake":10,events:9,recap:5,insights:1,community:7,spotlight:17},
+  theme_eng:{brand:2774,"program-intake":462,events:1606,recap:2616,insights:267,community:5665,spotlight:3464}
+};
+const ORGANIC_STATS_YTD={
+  posts:17, total_impressions:20934, total_engagements:6099, engagement_rate:29.1,
+  theme_count:{brand:5,"program-intake":4,events:1,recap:5,insights:1,community:1,spotlight:0},
+  theme_eng:{brand:2350,"program-intake":204,events:61,recap:2616,insights:267,community:601,spotlight:0}
+};
+const THEMES=[{id:"program-intake",label:"Program intake",color:"#F15A22"},{id:"brand",label:"Wade@10 / Brand",color:"#E4E517"},{id:"events",label:"Events",color:"#9C8AB8"},{id:"recap",label:"Weekly Recap",color:"#7AC4C5"},{id:"insights",label:"Industry insights",color:"#27BDBE"},{id:"community",label:"Community",color:"#ED3694"},{id:"spotlight",label:"Spotlight",color:"#B8B5CC"}];
+
+// Program & Audience funnel data (LIVE · period-toggleable · attribution policy: direct-only at program level, bundled at audience level)
+const PROGRAMS_12M=[
+  {id:"vc",name:"VC Catalyst",impressions:741703,visits:3409,deals:125,won:21,wonValue:122885,spend:6901},
+  {id:"moe",name:"Master of Entrepreneurship",impressions:0,visits:850,deals:62,won:22,wonValue:0,spend:0},
+  {id:"vcf",name:"VC Fundamentals",impressions:0,visits:711,deals:7,won:1,wonValue:2996,spend:0},
+  {id:"ge",name:"Growth Engine",impressions:0,visits:594,deals:11,won:0,wonValue:0,spend:0},
+  {id:"ai",name:"AI Conundrum",impressions:0,visits:236,deals:5,won:0,wonValue:0,spend:0},
+  {id:"ic",name:"Impact Catalyst",impressions:0,visits:145,deals:2,won:0,wonValue:0,spend:0},
+  {id:"up",name:"UpSchool",impressions:3141,visits:1491,deals:2,won:1,wonValue:20385,spend:135},
+  {id:"tle",name:"Think Like an Entrepreneur",impressions:0,visits:160,deals:1,won:0,wonValue:0,spend:0},
+  {id:"besp",name:"Bespoke",impressions:0,visits:306,deals:4,won:0,wonValue:0,spend:0},
+  {id:"winc",name:"Wade Inc",impressions:0,visits:193,deals:0,won:0,wonValue:0,spend:0},
+  {id:"eir",name:"In Residence (EiR/IiR)",impressions:0,visits:456,deals:0,won:0,wonValue:0,spend:0},
+  {id:"agv",name:"Ag Ventures",impressions:0,visits:475,deals:1,won:0,wonValue:0,spend:0}
+];
+const PROGRAMS_YTD=[
+  {id:"vc",name:"VC Catalyst",impressions:666059,visits:1616,deals:64,won:20,wonValue:112813,spend:433},
+  {id:"moe",name:"Master of Entrepreneurship",impressions:0,visits:272,deals:62,won:22,wonValue:0,spend:0},
+  {id:"vcf",name:"VC Fundamentals",impressions:0,visits:490,deals:5,won:1,wonValue:2996,spend:0},
+  {id:"ge",name:"Growth Engine",impressions:0,visits:752,deals:11,won:0,wonValue:0,spend:0},
+  {id:"ai",name:"AI Conundrum",impressions:0,visits:355,deals:5,won:0,wonValue:0,spend:0},
+  {id:"ic",name:"Impact Catalyst",impressions:0,visits:145,deals:2,won:0,wonValue:0,spend:0},
+  {id:"up",name:"UpSchool",impressions:3141,visits:778,deals:0,won:0,wonValue:0,spend:135},
+  {id:"tle",name:"Think Like an Entrepreneur",impressions:0,visits:215,deals:1,won:0,wonValue:0,spend:0},
+  {id:"besp",name:"Bespoke",impressions:0,visits:206,deals:4,won:0,wonValue:0,spend:0},
+  {id:"winc",name:"Wade Inc",impressions:0,visits:45,deals:0,won:0,wonValue:0,spend:0},
+  {id:"eir",name:"In Residence (EiR/IiR)",impressions:0,visits:192,deals:0,won:0,wonValue:0,spend:0},
+  {id:"agv",name:"Ag Ventures",impressions:0,visits:107,deals:1,won:0,wonValue:0,spend:0}
+];
+const AUDIENCES_12M=[
+  {id:"founders",name:"Founders",cls:"aud-founders",progs:"MoE · Wade Inc · EiR",impressions:12480,visits:1499,deals:62,won:22,wonValue:0,spend:641},
+  {id:"org-innovators",name:"Org Innovators",cls:"aud-org-innovators",progs:"TLE · AI Conundrum · Growth Engine · Bespoke",impressions:20538,visits:1296,deals:21,won:0,wonValue:0,spend:232},
+  {id:"investors",name:"Investors",cls:"aud-investors",progs:"VC Catalyst · VC Fundamentals · Impact Catalyst · Ag Ventures",impressions:762963,visits:4740,deals:135,won:22,wonValue:125881,spend:9236},
+  {id:"educators",name:"Educators",cls:"aud-educators",progs:"UpSchool (Complete · 3-day · 1-day · Student Challenges)",impressions:3141,visits:1491,deals:2,won:1,wonValue:20385,spend:135}
+];
+const AUDIENCES_YTD=[
+  {id:"founders",name:"Founders",cls:"aud-founders",progs:"MoE · Wade Inc · EiR",impressions:12480,visits:509,deals:62,won:22,wonValue:0,spend:641},
+  {id:"org-innovators",name:"Org Innovators",cls:"aud-org-innovators",progs:"TLE · AI Conundrum · Growth Engine · Bespoke",impressions:20538,visits:1528,deals:21,won:0,wonValue:0,spend:232},
+  {id:"investors",name:"Investors",cls:"aud-investors",progs:"VC Catalyst · VC Fundamentals · Impact Catalyst · Ag Ventures",impressions:683893,visits:2358,deals:71,won:21,wonValue:115809,spend:2333},
+  {id:"educators",name:"Educators",cls:"aud-educators",progs:"UpSchool (Complete · 3-day · 1-day · Student Challenges)",impressions:3141,visits:778,deals:0,won:0,wonValue:0,spend:135}
+];
+
+// Website Engagement data — top pages and bounce pages for both periods
+const PAGE_TOP_12M=[
+  ["/ (home)",8655,8169,"18.3s","62.4%","37.6%"],
+  ["/programs/investors/vc-catalyst/",3321,3215,"26.7s","55.9%","44.1%"],
+  ["/about/",2005,1992,"38.0s","73.4%","26.6%"],
+  ["/programs/entrepreneurs/master-of-entrepreneurship/",873,853,"22.2s","75.3%","24.7%"],
+  ["/community/",982,899,"17.7s","86.7%","13.3%"],
+  ["/programs/investors/vc-fundamentals/",564,521,"29.2s","64.5%","35.5%"],
+  ["/contact/",1594,1694,"8.4s","93.5%","6.6%"],
+  ["/programs/investors/ag-ventures/",481,475,"21.5s","61.9%","38.1%"],
+  ["/programs/schools/upschool-3-day/",469,483,"21.1s","69.8%","30.2%"],
+  ["/programs/entrepreneurs/",512,475,"19.7s","79.6%","20.4%"],
+  ["/programs/entrepreneurs/entrepreneurs-in-residence/",398,359,"25.9s","82.2%","17.8%"],
+  ["/programs/entrepreneurs/growth-engine/",327,241,"35.1s","69.3%","30.7%"],
+  ["/start/",459,303,"30.1s","76.2%","23.8%"],
+  ["/community/wade-at-10/",350,330,"26.4s","71.5%","28.5%"],
+  ["/vc-catalyst-application/",210,145,"60.6s","77.9%","22.1%"]
+];
+const PAGE_TOP_YTD=[
+  ["/ (home)",3731,3384,"15.2s","62.8%","37.2%"],
+  ["/programs/investors/vc-catalyst/",1145,1127,"22.8s","56.8%","43.2%"],
+  ["/about/",743,742,"43.6s","74.7%","25.3%"],
+  ["/programs/investors/vc-fundamentals/",443,433,"30.6s","63.7%","36.3%"],
+  ["/programs/entrepreneurs/growth-engine/",327,241,"35.1s","69.3%","30.7%"],
+  ["/start/",458,302,"29.6s","76.2%","23.8%"],
+  ["/community/wade-at-10/",348,328,"26.0s","71.3%","28.7%"],
+  ["/community/",387,356,"19.1s","86.8%","13.2%"],
+  ["/contact/",969,909,"7.3s","96.8%","3.2%"],
+  ["/from-confusion-to-clarity-... article",166,175,"33.3s","81.7%","18.3%"],
+  ["/programs/entrepreneurs/think-like-an-entrepreneur/",195,161,"31.2s","86.3%","13.7%"],
+  ["/embracing-your-inner-cockroach-... article",158,161,"28.1s","81.4%","18.6%"],
+  ["/programs/schools/upschool-complete/",495,440,"11.9s","38.2%","61.8%"],
+  ["/programs/entrepreneurs/master-of-entrepreneurship/",274,272,"17.0s","76.1%","23.9%"],
+  ["/programs/investors/impact-catalyst/",158,145,"18.8s","77.2%","22.8%"]
+];
+const PAGE_BOUNCE_12M=[
+  ["/programs/entrepreneurs/growth-engine/?hsa_acc=... (ad URL)",297,"70.3%","Google Ads landing — paid traffic bouncing"],
+  ["/programs/schools/upschool-complete/",501,"61.5%","Major content/UX issue on a high-traffic page"],
+  ["/founders-take-wisdom-from-the-wiggles-rayn-ong/",214,"46.8%","Article — single-page session typical"],
+  ["/programs/investors/vc-catalyst/",3321,"44.1%","Highest-volume program page · room to improve"],
+  ["/just-start-now-... (Annie Zhou article)",284,"43.3%","Article — single-page session typical"],
+  ["/meet-jessica-christiansen-franks-... (article)",349,"41.2%","Article — single-page session typical"],
+  ["/programs/investors/ag-ventures/",481,"38.1%","Program page — moderate bounce"],
+  ["/ (home)",8655,"37.6%","Home — 3,072 bouncing sessions = biggest absolute loss"]
+];
+const PAGE_BOUNCE_YTD=[
+  ["/programs/investors/vc-catalyst/?hsa_acc=... kw=startup investment (ad URL)",154,"70.3%","Paid VCC traffic — investor keyword targeting bouncing"],
+  ["/programs/entrepreneurs/growth-engine/?hsa_acc=... (ad URL)",297,"70.3%","Google Ads landing — paid traffic bouncing"],
+  ["/programs/schools/upschool-complete/",495,"61.8%","Major content/UX issue on a high-traffic page"],
+  ["/programs/investors/vc-catalyst/?hsa_acc=... kw=angel investors (ad URL)",158,"47.4%","Paid VCC traffic — angel-investor keyword"],
+  ["/programs/investors/vc-catalyst/",1145,"43.2%","Highest-volume program page · room to improve"],
+  ["/ (home)",3731,"37.2%","Home — 1,259 bouncing sessions"],
+  ["/programs/investors/ag-ventures/",107,"38.1%","Lower volume but still leaky"],
+  ["/programs/investors/vc-fundamentals/",443,"36.3%","Program page — moderate bounce"]
+];
+const PAGE_STATS_12M={avgTime:"15.5",avgEngRate:"~78",stickiestName:"VCC application",stickiestTime:"~61s avg",stickiestPath:"/vc-catalyst-application/",highestBounceName:"Growth Engine ad URL",highestBounceRate:"70.3% bounce",highestBounceNote:"Paid landing — investigate"};
+const PAGE_STATS_YTD={avgTime:"10.8",avgEngRate:"~74",stickiestName:"About",stickiestTime:"~44s avg",stickiestPath:"/about/",highestBounceName:"VCC ad URL (startup investment)",highestBounceRate:"70.3% bounce",highestBounceNote:"Paid VCC traffic bouncing"};
+
+// EDM engagement (HubSpot contact-level · Wade-listed only · refreshed 13 May 2026)
+// Period-toggleable: 12-month rolling vs YTD. Headline values switch by period; "Active 30d" is always last 30 days from today.
+const EDM_TOTAL=21925;
+const EDM_NEVER=13002;           // Contacts with no recorded last open ever
+const EDM_UNTOUCHED=2063;        // Contacts who never received any marketing email
+const EDM_COLD=10939;            // Received marketing emails but never opened (= NEVER - UNTOUCHED)
+const EDM_CLICK_30=444;          // Clicked in last 30 days (snapshot)
+
+// Window-based opener/clicker counts
+const EDM_OPENERS_12M=8923;      // Opened ≥1 email in last 12 months
+const EDM_OPENERS_YTD=8141;      // Opened ≥1 email since Jan 1 2026
+const EDM_CLICKERS_12M=2940;     // Clicked ≥1 email in last 12 months
+const EDM_CLICKERS_YTD=2359;     // Clicked ≥1 email since Jan 1 2026
+const EDM_NO_ACTIVITY_12M=13002; // No open in 12mo (= EDM_NEVER given window coverage)
+const EDM_NO_ACTIVITY_YTD=13784; // No open since Jan 1 (Dec-only openers + Never opened)
+
+const EDM_RECENCY_12M=[
+  {label:"Active · 30d",value:4046,color:"#27BDBE"},
+  {label:"Recent · 31–60d",value:664,color:"#7AC4C5"},
+  {label:"Lapsed · 61–90d",value:2574,color:"#E4E517"},
+  {label:"Dormant · 91–180d",value:1639,color:"#F89D78"},
+  {label:"Never opened in 12mo",value:13002,color:"#B8B5CC"}
+];
+const EDM_RECENCY_YTD=[
+  {label:"Active · 30d",value:4046,color:"#27BDBE"},
+  {label:"Recent · 31–60d",value:664,color:"#7AC4C5"},
+  {label:"Lapsed · 61–90d",value:2574,color:"#E4E517"},
+  {label:"Earlier YTD · 91d+",value:857,color:"#F89D78"},
+  {label:"No YTD opens",value:13784,color:"#B8B5CC"}
+];
+
+// Daily opens — last 90 days (date, contact count)
+const EDM_OPENS_DAILY=[["2026-02-10",9],["2026-02-11",9],["2026-02-12",202],["2026-02-13",206],["2026-02-14",21],["2026-02-15",19],["2026-02-16",54],["2026-02-17",9],["2026-02-18",801],["2026-02-19",84],["2026-02-20",55],["2026-02-21",19],["2026-02-22",15],["2026-02-23",74],["2026-02-24",29],["2026-02-25",26],["2026-02-26",14],["2026-02-28",5],["2026-03-01",11],["2026-03-02",10],["2026-03-03",3],["2026-03-04",603],["2026-03-05",32],["2026-03-06",182],["2026-03-07",21],["2026-03-08",6],["2026-03-09",16],["2026-03-10",10],["2026-03-11",26],["2026-03-12",17],["2026-03-13",16],["2026-03-14",4],["2026-03-15",10],["2026-03-16",12],["2026-03-17",8],["2026-03-18",4],["2026-03-19",143],["2026-03-20",13],["2026-03-21",11],["2026-03-22",3],["2026-03-23",13],["2026-03-24",6],["2026-03-27",42],["2026-03-29",15],["2026-03-30",8],["2026-03-31",14],["2026-04-01",3],["2026-04-03",4],["2026-04-05",2],["2026-04-07",12],["2026-04-09",8],["2026-04-10",1],["2026-04-12",6],["2026-04-14",16],["2026-04-16",1],["2026-04-17",9],["2026-04-19",5],["2026-04-21",14],["2026-04-24",11],["2026-04-28",9],["2026-04-29",3244],["2026-04-30",308],["2026-05-01",74],["2026-05-02",35],["2026-05-03",75],["2026-05-04",53],["2026-05-05",80],["2026-05-06",23],["2026-05-07",12],["2026-05-08",12],["2026-05-09",6],["2026-05-10",16],["2026-05-11",27],["2026-05-12",16]];
+
+const EDM_SEGMENTS_12M=[
+  {id:"champ",name:"Champions",count:444,rule:"Clicked a Wade email in the last 30 days",cls:"s-champ",action:"Your hottest cohort. Use for product launches, paid event invites, advocacy and referral asks. Highest LTV per send."},
+  {id:"active",name:"Active readers",count:3602,rule:"Opened in last 30 days, didn't click",cls:"s-active",action:"Reading but not yet acting. Test stronger CTAs, sharper subject lines and more specific offers to convert opens into clicks."},
+  {id:"slip",name:"Slipping",count:3238,rule:"Last open 31–90 days ago",cls:"s-slip",action:"Re-engagement window is open. Send a high-relevance broadcast or move them to a lower-frequency segment before they go dormant."},
+  {id:"dorm",name:"Dormant",count:1639,rule:"Last open 91–180 days ago",cls:"s-dorm",action:"Winback or accept attrition. Send one 'still want to hear from us?' email — if no open, suppress from regular sends."},
+  {id:"cold",name:"Cold leads",count:10939,rule:"Received emails but never opened",cls:"s-cold",action:"Mostly the Nov 2025 Mailchimp import. Run a single aggressive winback with a strong subject line — if no open, suppress. Best deliverability fix on the list."},
+  {id:"untouch",name:"Untouched",count:2063,rule:"Never received any marketing email",cls:"s-untouch",action:"Activation opportunity. Add to an onboarding sequence or send a welcome email — these are the cleanest growth lever on the list."}
+];
+
+const EDM_SEGMENTS_YTD=[
+  {id:"clk-ytd",name:"YTD clickers",count:2359,rule:"Clicked ≥1 Wade email since Jan 1 2026",cls:"s-champ",action:"~10.8% of your audience clicked something this year. Use this high-intent cohort for paid programs, premium events and alumni asks."},
+  {id:"op-ytd",name:"YTD openers",count:8141,rule:"Opened ≥1 Wade email since Jan 1 2026",cls:"s-active",action:"~37% of your audience has interacted with Wade content this year. Warm — use for product launches, surveys and bringing them back into program funnels."},
+  {id:"recent",name:"Recently active",count:4046,rule:"Opened in last 30 days (subset of YTD openers)",cls:"s-slip",action:"Right-now engaged cohort. Best window for time-sensitive sends — events, application deadlines and hot announcements."},
+  {id:"early",name:"Early-YTD only",count:857,rule:"Last open in Jan or early Feb 2026 (no activity since)",cls:"s-dorm",action:"They engaged early in the year then went quiet. Re-engagement window is closing — try one targeted send before they go dormant."},
+  {id:"no-ytd",name:"No YTD activity",count:13784,rule:"No open since Jan 1 2026 (Dec-only openers + never opened)",cls:"s-cold",action:"~63% of the list has been silent this year. Run a winback and suppress non-responders to lift deliverability and overall send health."}
+];
+
+// Wade audience (HubSpot Wade-listed contact lifecycle counts)
+const HS_AUDIENCE=[["2025|10","customer",70],["2025|10","lead",1027],["2025|10","opportunity",18],["2025|10","salesqualifiedlead",4],["2025|11","customer",234],["2025|11","evangelist",12],["2025|11","lead",19277],["2025|11","opportunity",416],["2025|11","other",16],["2025|12","customer",5],["2025|12","lead",408],["2025|12","opportunity",1],["2026|01","customer",40],["2026|01","lead",5],["2026|01","opportunity",34],["2026|01","other",2],["2026|02","customer",8],["2026|02","lead",66],["2026|02","opportunity",8],["2026|02","other",3],["2026|03","customer",4],["2026|03","lead",92],["2026|03","opportunity",7],["2026|04","customer",5],["2026|04","lead",30],["2026|04","opportunity",8],["2026|05","lead",52]];
+
+// === HELPERS ===
+const PLUM='#1E194F',PLUM_SOFT='#3A3470',CREAM='#FAF7F2';
+function fmtN(n){n=Number(n)||0;if(Math.abs(n)>=1e6)return(n/1e6).toFixed(1)+"M";if(Math.abs(n)>=1e3)return(n/1e3).toFixed(1)+"k";return Math.round(n).toLocaleString()}
+function fmtM(n){return"$"+fmtN(n)}
+function getMI(ym){return MONTHS.indexOf(ym)}
+const channelColors={"Direct":"#6E5B8A","Organic Search":"#27BDBE","Paid Search":"#F15A22","Organic Social":"#ED3694","Paid Social":"#E4E517","Email":"#9C8AB8","Referral":"#B8B5CC","Display":"#5D4F70","Cross-network":"#7A6B8E","Unassigned":"#D5CFE0","(Other)":"#A89DBC","Organic Video":"#7AC4C5","Paid Other":"#F89D78"};
+
+Chart.defaults.color=PLUM_SOFT;Chart.defaults.borderColor='#E8E4D9';Chart.defaults.font.family='GT Walsheim,-apple-system,BlinkMacSystemFont,Helvetica Neue,Segoe UI,Arial,sans-serif';
+const baseOpts={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:8,font:{size:9.5},color:PLUM_SOFT}},tooltip:{padding:10,backgroundColor:'rgba(30,25,79,0.95)',titleColor:'#fff',bodyColor:'#fff'}},scales:{x:{grid:{display:false},ticks:{font:{size:9.5},color:PLUM_SOFT,maxRotation:0,autoSkipPadding:8}},y:{grid:{color:CREAM},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>fmtN(v)},beginAtZero:true}}};
+
+function bms(rows,ymI,vI){const m={};rows.forEach(r=>{const ym=r[ymI];m[ym]=(m[ym]||0)+(Number(r[vI])||0)});return MONTHS.map(m_=>m[m_]||0)}
+
+function destroyAllCharts(){document.querySelectorAll('canvas').forEach(c=>{const inst=Chart.getChart(c);if(inst)inst.destroy()})}
+
+// === RENDER ===
+function renderCover(){
+  const usersByMonth=MONTHS.map(()=>0),sessByMonth=MONTHS.map(()=>0),convByMonth=MONTHS.map(()=>0);const channelTotals={};
+  GA4_CHANNELS.forEach(([ym,ch,u,s,c])=>{const i=getMI(ym);if(i<0)return;usersByMonth[i]+=u;sessByMonth[i]+=s;convByMonth[i]+=c;if(!channelTotals[ch])channelTotals[ch]=MONTHS.map(()=>0);channelTotals[ch][i]+=u});
+  const tu=usersByMonth.reduce((a,b)=>a+b,0),tc=convByMonth.reduce((a,b)=>a+b,0);
+  const gAds=bms(GADS,0,3),lAds=bms(LIA,0,3);const ts=gAds.reduce((a,b)=>a+b,0)+lAds.reduce((a,b)=>a+b,0);
+  const hsW=bms(HS_DEALS,0,2),hsWV=bms(HS_DEALS,0,4);const tw=hsW.reduce((a,b)=>a+b,0),twv=hsWV.reduce((a,b)=>a+b,0);
+  const sUSum=MONTHS.map(m=>{const r=STUDIO.find(x=>x[0]===m);return r?r[1]:0}).reduce((a,b)=>a+b,0);
+  const emailable=(typeof EDM_TOTAL!=='undefined')?EDM_TOTAL:0;
+  // Active 30d is a fixed-window snapshot — same across YTD and 12mo, pulled from EDM_RECENCY_12M[0]
+  const active30=(typeof EDM_RECENCY_12M!=='undefined'&&EDM_RECENCY_12M[0])?EDM_RECENCY_12M[0].value:0;
+
+  // LinkedIn engagement rate · period-toggleable (sum monthly impressions + engagements, then compute rate)
+  if(typeof LIP_REACH!=='undefined'){
+    const liImp=LIP_REACH.monthly_impressions.filter(r=>MONTHS.indexOf(r[0])>=0).reduce((s,r)=>s+r[1],0);
+    const liEng=LIP_REACH.monthly_engagements.filter(r=>MONTHS.indexOf(r[0])>=0).reduce((s,r)=>s+r[1],0);
+    const liEr=liImp>0?(liEng/liImp*100):0;
+    const csli=document.getElementById('cs-li-er');if(csli)csli.innerHTML=liEr.toFixed(1)+'<span style="font-size:14px;color:rgba(255,255,255,0.7);margin-left:2px">%</span>';
+  }
+  document.getElementById('cs-users').textContent=fmtN(tu);
+  document.getElementById('cs-studio').textContent=fmtN(sUSum);
+  document.getElementById('cs-aud').textContent=fmtN(emailable);
+  const csa=document.getElementById('cs-active');if(csa)csa.textContent=fmtN(active30);
+  document.getElementById('cs-spend').textContent=fmtM(ts);
+  document.getElementById('cs-won').textContent=fmtN(tw)+' · '+fmtM(twv);
+
+  document.getElementById('p-users').textContent=fmtN(tu);
+  const pc=document.getElementById('p-conv');if(pc)pc.textContent=fmtN(tc);
+  document.getElementById('p-spend').textContent=fmtM(ts);
+  document.getElementById('p-won').innerHTML=fmtN(tw)+' <span class="unit">· '+fmtM(twv)+'</span>';
+
+  new Chart(document.getElementById('c-acq'),{type:'bar',data:{labels:ML,datasets:[{label:'Sessions',data:sessByMonth,backgroundColor:'#E4E517',borderRadius:4,order:2},{label:'Users',data:usersByMonth,type:'line',borderColor:'#F15A22',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:1}]},options:baseOpts});
+  const order=['Direct','Organic Search','Paid Search','Organic Social','Paid Social','Email','Referral','Display','Cross-network','Organic Video','Paid Other','Unassigned','(Other)'];
+  const channels=Object.keys(channelTotals).sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai===-1?99:ai)-(bi===-1?99:bi)});
+  new Chart(document.getElementById('c-channel'),{type:'bar',data:{labels:ML,datasets:channels.map(ch=>({label:ch,data:channelTotals[ch],backgroundColor:channelColors[ch]||'#9ABEC4',stack:'channels',borderWidth:0}))},options:Object.assign({},baseOpts,{scales:{x:Object.assign({},baseOpts.scales.x,{stacked:true}),y:Object.assign({},baseOpts.scales.y,{stacked:true})}})});
+  new Chart(document.getElementById('c-spend'),{type:'bar',data:{labels:ML,datasets:[{label:'Google Ads',data:gAds,backgroundColor:'#F15A22',stack:'spend',borderRadius:2},{label:'LinkedIn Ads',data:lAds,backgroundColor:'#27BDBE',stack:'spend',borderRadius:2},{label:'Meta Ads',data:MONTHS.map(()=>0),backgroundColor:'#ED3694',stack:'spend',borderRadius:2}]},options:Object.assign({},baseOpts,{scales:{x:Object.assign({},baseOpts.scales.x,{stacked:true}),y:Object.assign({},baseOpts.scales.y,{stacked:true,ticks:Object.assign({},baseOpts.scales.y.ticks,{callback:v=>fmtM(v)})})}})});
+  // Conversions chart hidden — see Performance tab placeholder. Re-enable once GA4 event filter is configured.
+  const ccCanvas=document.getElementById('c-conv');
+  if(ccCanvas){const gC=bms(GADS,0,4),lC=bms(LIA,0,4);const paidC=convByMonth.map((_,i)=>(gC[i]||0)+(lC[i]||0));new Chart(ccCanvas,{type:'bar',data:{labels:ML,datasets:[{label:'GA4 key events',data:convByMonth,backgroundColor:'#27BDBE',borderRadius:4,order:2},{label:'Paid conversions',data:paidC,type:'line',borderColor:'#ED3694',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:1}]},options:baseOpts});}
+
+  const hsD=MONTHS.map(()=>0),hsAW=MONTHS.map(()=>0);
+  HS_DEALS.forEach(([ym,d,w,a,aw])=>{const i=getMI(ym);if(i<0)return;hsD[i]=d;hsAW[i]=aw});
+  new Chart(document.getElementById('c-hs'),{type:'bar',data:{labels:ML,datasets:[{label:'Closed-won value',data:hsAW,backgroundColor:'rgba(241,90,34,0.18)',borderColor:'#F15A22',borderWidth:1,yAxisID:'y1',order:3,borderRadius:2},{label:'New deals',data:hsD,type:'line',borderColor:'#27BDBE',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,yAxisID:'y',order:1},{label:'Closed-won deals',data:hsW,type:'line',borderColor:'#ED3694',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,yAxisID:'y',order:2}]},options:Object.assign({},baseOpts,{scales:{x:baseOpts.scales.x,y:Object.assign({},baseOpts.scales.y,{position:'left'}),y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>fmtM(v)},beginAtZero:true}}})});
+
+  const sU=MONTHS.map(m=>{const r=STUDIO.find(x=>x[0]===m);return r?r[1]:0}),sS=MONTHS.map(m=>{const r=STUDIO.find(x=>x[0]===m);return r?r[2]:0}),sV=MONTHS.map(m=>{const r=STUDIO.find(x=>x[0]===m);return r?r[3]:0});
+  new Chart(document.getElementById('c-studio'),{type:'bar',data:{labels:ML,datasets:[{label:'Pageviews',data:sV,backgroundColor:'rgba(156,138,184,0.6)',borderRadius:4,order:3},{label:'Sessions',data:sS,type:'line',borderColor:'#9C8AB8',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:2},{label:'Users',data:sU,type:'line',borderColor:'#F15A22',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:1}]},options:baseOpts});
+}
+
+function renderFullFunnel(){
+  const inMonths=r=>MONTHS.indexOf(r[0])>=0;
+  const impG=GADS.filter(inMonths).reduce((s,r)=>s+r[1],0);const impL=LIA.filter(inMonths).reduce((s,r)=>s+r[1],0);
+  const tImp=impG+impL;
+  const sessTotal=GA4_CHANNELS.filter(inMonths).reduce((s,r)=>s+r[3],0);
+  const tDeals=HS_DEALS.filter(inMonths).reduce((s,r)=>s+r[1],0);
+  const tWon=HS_DEALS.filter(inMonths).reduce((s,r)=>s+r[2],0);
+  const tWonV=HS_DEALS.filter(inMonths).reduce((s,r)=>s+r[4],0);
+  const tSp=GADS.filter(inMonths).reduce((s,r)=>s+r[3],0)+LIA.filter(inMonths).reduce((s,r)=>s+r[3],0);
+  const roas=tSp>0?tWonV/tSp:0;
+
+  document.getElementById('ff-imp').textContent=fmtN(tImp);
+  document.getElementById('ff-vis').textContent=fmtN(sessTotal);
+  document.getElementById('ff-deal').textContent=fmtN(tDeals);
+  document.getElementById('ff-won').textContent=fmtN(tWon);
+  document.getElementById('ff-won-d').textContent=fmtM(tWonV);
+  document.getElementById('ff-roas').innerHTML=roas.toFixed(1)+'<span class="unit">×</span>';
+  document.getElementById('ff-roas-d').textContent=fmtM(tSp)+' spend';
+
+  const stages=[{n:'Paid Impressions',v:tImp,s:'Google + LinkedIn + Meta',c:''},{n:'Page Visits',v:sessTotal,s:'GA4 sessions',c:'s2'},{n:'Pipeline Deals',v:tDeals,s:'HubSpot Wade pipelines',c:'s3'},{n:'Closed-Won',v:tWon,s:'HubSpot won deals',c:'s4'}];
+  const max=Math.max(...stages.map(x=>x.v),1);
+  document.getElementById('ff-stages').innerHTML=stages.map((s,i)=>{const w=Math.max(2,Math.round((s.v/max)*100));const prev=i>0?stages[i-1].v:null;const rate=prev&&prev>0?((s.v/prev)*100):null;const rateH=rate===null?'<span class="rate-val">—</span>':'<span class="rate-val">'+rate.toFixed(rate<1?2:1)+'%</span><br>conversion';const rc=rate!==null&&rate<1?'warn':'';return '<div class="fs-row"><div class="fs-stage">'+s.n+'<span class="fs-source">'+s.s+'</span></div><div class="fs-bar-wrap"><div class="fs-bar '+s.c+'" style="width:'+w+'%">'+fmtN(s.v)+'</div></div><div class="fs-value">'+fmtN(s.v)+'</div><div class="fs-rate '+rc+'">'+rateH+'</div></div>'}).join('');
+
+  const impByMonth=MONTHS.map((_,i)=>{return (GADS.find(r=>r[0]===MONTHS[i])?.[1]||0)+(LIA.find(r=>r[0]===MONTHS[i])?.[1]||0)});
+  const visMonth=MONTHS.map(()=>0);GA4_CHANNELS.forEach(([ym,ch,u,s])=>{const i=getMI(ym);if(i>=0)visMonth[i]+=s});
+  const dealMonth=MONTHS.map(()=>0),wonMonth=MONTHS.map(()=>0);HS_DEALS.forEach(([ym,d,w])=>{const i=getMI(ym);if(i>=0){dealMonth[i]=d;wonMonth[i]=w}});
+  new Chart(document.getElementById('c-ff-trend'),{type:'line',data:{labels:ML,datasets:[{label:'Impressions',data:impByMonth,borderColor:'#F15A22',tension:0.3,pointRadius:3,borderWidth:2.5,yAxisID:'y'},{label:'Page visits',data:visMonth,borderColor:'#ED3694',tension:0.3,pointRadius:3,borderWidth:2.5,yAxisID:'y'},{label:'Pipeline deals',data:dealMonth,borderColor:'#27BDBE',tension:0.3,pointRadius:3,borderWidth:2.5,yAxisID:'y1'},{label:'Closed-won',data:wonMonth,borderColor:'#9C8AB8',tension:0.3,pointRadius:3,borderWidth:2.5,yAxisID:'y1'}]},options:Object.assign({},baseOpts,{scales:{x:baseOpts.scales.x,y:Object.assign({},baseOpts.scales.y,{position:'left',title:{display:true,text:'Imp / visits',font:{size:9.5},color:PLUM_SOFT}}),y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>fmtN(v)},beginAtZero:true,title:{display:true,text:'Deals / won',font:{size:9.5},color:PLUM_SOFT}}}})});
+
+  const i2v=MONTHS.map((_,i)=>impByMonth[i]>0?(visMonth[i]/impByMonth[i]*100):0);
+  const v2d=MONTHS.map((_,i)=>visMonth[i]>0?(dealMonth[i]/visMonth[i]*100):0);
+  const d2w=MONTHS.map((_,i)=>dealMonth[i]>0?(wonMonth[i]/dealMonth[i]*100):0);
+  new Chart(document.getElementById('c-ff-rates'),{type:'line',data:{labels:ML,datasets:[{label:'Imp → Visit %',data:i2v,borderColor:'#F15A22',tension:0.3,pointRadius:3,borderWidth:2.5},{label:'Visit → Deal %',data:v2d,borderColor:'#ED3694',tension:0.3,pointRadius:3,borderWidth:2.5},{label:'Deal → Won %',data:d2w,borderColor:'#27BDBE',tension:0.3,pointRadius:3,borderWidth:2.5}]},options:Object.assign({},baseOpts,{scales:Object.assign({},baseOpts.scales,{y:Object.assign({},baseOpts.scales.y,{ticks:Object.assign({},baseOpts.scales.y.ticks,{callback:v=>v.toFixed(1)+'%'})})})})});
+}
+
+function renderProgramCards(items,gridId){
+  const ranked=items.slice().sort((a,b)=>(b.impressions+b.visits*100+b.deals*10000+b.won*100000)-(a.impressions+a.visits*100+a.deals*10000+a.won*100000));
+  document.getElementById(gridId).innerHTML=ranked.map((p,idx)=>{
+    const stages=[{l:'Impressions',c:'',v:p.impressions},{l:'Visits',c:'s2',v:p.visits},{l:'Deals',c:'s3',v:p.deals},{l:'Won',c:'s4',v:p.won}];
+    const max=Math.max(...stages.map(s=>s.v),1);
+    const v2d=p.visits>0?(p.deals/p.visits*100):null,d2w=p.deals>0?(p.won/p.deals*100):null,i2v=p.impressions>0?(p.visits/p.impressions*100):null;
+    const cls=p.cls||'';
+    return '<div class="pcard '+cls+'"><div class="pcard-h"><div><div class="pcard-name">'+p.name+'</div>'+(p.progs?'<div class="pcard-progs">'+p.progs+'</div>':'')+'</div><div class="pcard-rank">#'+(idx+1)+(p.won?' · '+fmtN(p.won)+' won':'')+'</div></div><div>'+stages.map(s=>{const w=s.v>0?Math.max(2,Math.round((s.v/max)*100)):0;const bc=s.v===0?'empty':s.c;return '<div class="ps-row"><span class="ps-label">'+s.l+'</span><div class="ps-bar-wrap"><div class="ps-bar '+bc+'" style="width:'+w+'%"></div></div><span class="ps-value">'+fmtN(s.v)+'</span></div>'}).join('')+'</div><div class="ps-rates">'+(i2v!==null?'<span>I→V <span class="rv">'+i2v.toFixed(2)+'%</span></span>':'')+(v2d!==null?'<span>V→D <span class="rv'+(v2d<1?' warn':'')+'">'+v2d.toFixed(2)+'%</span></span>':'')+(d2w!==null?'<span>D→W <span class="rv">'+d2w.toFixed(0)+'%</span></span>':'')+(p.spend>0?'<span>$'+fmtN(p.spend)+' spend</span>':'')+'</div></div>';
+  }).join('');
+}
+
+function renderHub(){
+  const v=MONTHS.map(m=>HUB_BY_MONTH[m]||0),u=MONTHS.map(m=>HUB_USERS_BY_MONTH[m]||0);
+  const totV=v.reduce((a,b)=>a+b,0),totU=u.reduce((a,b)=>a+b,0);const am=v.filter(x=>x>0).length;
+  document.getElementById('h-views').textContent=fmtN(totV);
+  document.getElementById('h-users').textContent=fmtN(totU);
+  document.getElementById('h-active').textContent=am+' / '+MONTHS.length;
+  const top=HUB_PAGES[0];document.getElementById('h-top').textContent=top[0];document.getElementById('h-top-d').textContent=fmtN(top[1])+' views';
+
+  new Chart(document.getElementById('c-htrend'),{type:'bar',data:{labels:ML,datasets:[{label:'Pageviews',data:v,backgroundColor:'#ED3694',borderRadius:4,order:2},{label:'Unique visitors',data:u,type:'line',borderColor:'#27BDBE',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:1}]},options:baseOpts});
+  const tk=['entrepreneur','investor','agtech','schools','bespoke'];
+  new Chart(document.getElementById('c-htheme'),{type:'bar',data:{labels:ML,datasets:tk.map(k=>({label:HUB_THEME_LABELS[k],data:MONTHS.map(m=>(HUB_THEME_BY_MONTH[m]||{})[k]||0),backgroundColor:HUB_THEME_COLORS[k],stack:'theme',borderWidth:0}))},options:Object.assign({},baseOpts,{scales:{x:Object.assign({},baseOpts.scales.x,{stacked:true}),y:Object.assign({},baseOpts.scales.y,{stacked:true})}})});
+
+  const tb=document.querySelector('#hub-table tbody');
+  tb.innerHTML=HUB_PAGES.slice(0,15).map(p=>{const tc=HUB_THEME_COLORS[p[3]]||'#888',tl=HUB_THEME_LABELS[p[3]]||p[3];const col=(p[3]==='schools'||p[3]==='alumni'||p[3]==='agtech')?'#2E2541':'#fff';return '<tr><td>'+p[0]+'</td><td><span class="tag" style="background:'+tc+';color:'+col+'">'+tl+'</span></td><td class="num">'+fmtN(p[1])+'</td><td class="num">'+fmtN(p[2])+'</td></tr>'}).join('');
+  const ab=document.querySelector('#hub-articles tbody');
+  const pretty=p=>p.replace(/^\//,'').replace(/\/$/,'').replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  ab.innerHTML=HUB_ARTICLES.slice().sort((a,b)=>b[1]-a[1]).slice(0,15).map(a=>{const tc=HUB_THEME_COLORS[a[3]]||'#888',tl=HUB_THEME_LABELS[a[3]]||a[3];const col=(a[3]==='schools'||a[3]==='alumni'||a[3]==='agtech')?'#2E2541':'#fff';return '<tr><td title="'+a[0]+'" style="max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+pretty(a[0])+'</td><td><span class="tag" style="background:'+tc+';color:'+col+'">'+tl+'</span></td><td class="num">'+fmtN(a[1])+'</td><td class="num">'+fmtN(a[2])+'</td></tr>'}).join('');
+}
+
+function renderStudio(){
+  const niceName=s=>s.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+  // Headline KPIs
+  const f0=STUDIO_FUNNEL[0], f4=STUDIO_FUNNEL.find(s=>s.label==="Completed");
+  const may=STUDIO_QUALITY.find(q=>q.ym==="2026|05"), apr=STUDIO_QUALITY.find(q=>q.ym==="2026|04");
+
+  document.getElementById('st-users').textContent=fmtN(f0.users);
+  document.getElementById('st-users-d').textContent=fmtN(f0.sessions)+' sessions · last 90d';
+
+  if(may && apr){
+    const b=document.getElementById('st-bounce');if(b)b.innerHTML=may.bounceRate.toFixed(1)+'<span class="unit">%</span>';
+    const bd=document.getElementById('st-bounce-d');
+    if(bd){const delta=may.bounceRate-apr.bounceRate;bd.textContent=(delta>0?'+':'')+delta.toFixed(1)+' pts vs Apr ('+apr.bounceRate.toFixed(1)+'%)';bd.className=(delta>0?'kpi-delta warn':'kpi-delta');}
+  }
+
+  const c=document.getElementById('st-completions');if(c)c.textContent=fmtN(f4.events);
+  const cd=document.getElementById('st-completions-d');if(cd)cd.textContent=f4.users+' unique users';
+
+  document.getElementById('st-power').textContent=STUDIO_REPORT_USERS;
+  document.getElementById('st-power-d').textContent=fmtN(STUDIO_REPORTS_GENERATED)+' reports · '+(STUDIO_REPORTS_GENERATED/STUDIO_REPORT_USERS).toFixed(1)+' per power user';
+
+  // Funnel chart — horizontal bar by unique users
+  new Chart(document.getElementById('c-studio-funnel'),{type:'bar',data:{labels:STUDIO_FUNNEL.map(s=>s.label),datasets:[{label:'Unique users',data:STUDIO_FUNNEL.map(s=>s.users),backgroundColor:STUDIO_FUNNEL.map(s=>s.color),borderRadius:4}]},options:Object.assign({},baseOpts,{indexAxis:'y',plugins:Object.assign({},baseOpts.plugins,{legend:{display:false},tooltip:Object.assign({},baseOpts.plugins.tooltip,{callbacks:{label:ctx=>{const s=STUDIO_FUNNEL[ctx.dataIndex];return fmtN(s.users)+' users · '+fmtN(s.sessions)+' sessions · '+fmtN(s.events)+' events'}}})}),scales:{x:{grid:{color:CREAM},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>fmtN(v)},beginAtZero:true},y:{grid:{display:false},ticks:{font:{size:11},color:PLUM_SOFT}}}})});
+
+  // Engagement quality trend — users (bar) + bounce % and engagement % (lines on right axis)
+  const stLabels=STUDIO_QUALITY.map(q=>{const[y,n]=q.ym.split("|");return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(n,10)-1]+" '"+y.slice(2)});
+  new Chart(document.getElementById('c-studio-trend'),{type:'bar',data:{labels:stLabels,datasets:[
+    {label:'Users',data:STUDIO_QUALITY.map(q=>q.users),backgroundColor:'rgba(156,138,184,0.6)',borderRadius:4,yAxisID:'y',order:3},
+    {label:'Bounce rate %',data:STUDIO_QUALITY.map(q=>q.bounceRate),type:'line',borderColor:'#F15A22',tension:0.3,fill:false,pointRadius:5,borderWidth:2.5,yAxisID:'y1',order:1},
+    {label:'Engagement rate %',data:STUDIO_QUALITY.map(q=>q.engRate),type:'line',borderColor:'#27BDBE',tension:0.3,fill:false,pointRadius:5,borderWidth:2.5,yAxisID:'y1',order:2}
+  ]},options:Object.assign({},baseOpts,{scales:{x:baseOpts.scales.x,y:Object.assign({},baseOpts.scales.y,{position:'left'}),y1:{position:'right',grid:{display:false},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>v+'%'},beginAtZero:true,max:100}}})});
+
+  // Top 15 tools by Use — stacked Browse + Use horizontal
+  const top15=STUDIO_TOOLS.slice(0,15);
+  new Chart(document.getElementById('c-studio-tools'),{type:'bar',data:{labels:top15.map(t=>niceName(t[0])),datasets:[
+    {label:'Use (canvas sessions)',data:top15.map(t=>t[2]),backgroundColor:'#9C8AB8',borderRadius:3,stack:'a'},
+    {label:'Browse (info page)',data:top15.map(t=>t[1]),backgroundColor:'rgba(184,181,204,0.55)',borderRadius:3,stack:'a'}
+  ]},options:Object.assign({},baseOpts,{indexAxis:'y',plugins:Object.assign({},baseOpts.plugins,{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:8,font:{size:9.5},color:PLUM_SOFT}}}),scales:{x:{grid:{color:CREAM},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>fmtN(v)},beginAtZero:true,stacked:true},y:{grid:{display:false},ticks:{font:{size:10},color:PLUM_SOFT},stacked:true}}})});
+
+  // Full table — browse / use / users / launch
+  const tb=document.querySelector('#studio-tools-table tbody');
+  if(tb){
+    tb.innerHTML=STUDIO_TOOLS.map(t=>'<tr><td>'+niceName(t[0])+'</td><td class="num">'+fmtN(t[1])+'</td><td class="num"><strong>'+fmtN(t[2])+'</strong></td><td class="num">'+fmtN(t[3])+'</td><td class="num">'+fmtN(t[4])+'</td></tr>').join('');
+  }
+}
+
+function renderEDM(){
+  const ytd=isYTD();
+  const recency = ytd ? EDM_RECENCY_YTD : EDM_RECENCY_12M;
+  const segments = ytd ? EDM_SEGMENTS_YTD : EDM_SEGMENTS_12M;
+  const openers = ytd ? EDM_OPENERS_YTD : EDM_OPENERS_12M;
+  const clickers = ytd ? EDM_CLICKERS_YTD : EDM_CLICKERS_12M;
+  const noActivity = ytd ? EDM_NO_ACTIVITY_YTD : EDM_NO_ACTIVITY_12M;
+  const total=EDM_TOTAL;
+  const pctOpeners=total>0?(openers/total*100):0;
+  const pctClickers=total>0?(clickers/total*100):0;
+  const pctNoAct=total>0?(noActivity/total*100):0;
+
+  document.getElementById('e-total').textContent=fmtN(total);
+  document.getElementById('e-total-d').textContent='Wade-listed audience';
+
+  const eActiveLbl=document.getElementById('e-active-lbl');if(eActiveLbl)eActiveLbl.textContent=ytd?'Openers · YTD':'Openers · 12mo';
+  document.getElementById('e-active').innerHTML=fmtN(openers);
+  document.getElementById('e-active-d').textContent=pctOpeners.toFixed(1)+'% of audience '+(ytd?'opened since Jan 1':'opened in last 12mo');
+
+  const eClickLbl=document.getElementById('e-click-lbl');if(eClickLbl)eClickLbl.textContent=ytd?'Click-engaged · YTD':'Click-engaged · 12mo';
+  document.getElementById('e-click').textContent=fmtN(clickers);
+  document.getElementById('e-click-d').textContent=pctClickers.toFixed(1)+'% of audience '+(ytd?'clicked since Jan 1':'clicked in last 12mo');
+
+  const eNeverLbl=document.getElementById('e-never-lbl');if(eNeverLbl)eNeverLbl.textContent=ytd?'No YTD activity':'No 12mo activity';
+  document.getElementById('e-never').textContent=fmtN(noActivity);
+  const neverDelta=document.getElementById('e-never-d');neverDelta.textContent=pctNoAct.toFixed(0)+'% '+(ytd?'silent YTD':'silent in 12mo');neverDelta.className='kpi-delta warn';
+
+  const recTitle=document.getElementById('edm-recency-sub');if(recTitle)recTitle.textContent='Wade-listed contacts bucketed by most recent open · '+(ytd?'YTD window':'12-month window');
+
+  // Recency horizontal bar
+  new Chart(document.getElementById('c-edm-recency'),{type:'bar',data:{labels:recency.map(r=>r.label),datasets:[{label:'Contacts',data:recency.map(r=>r.value),backgroundColor:recency.map(r=>r.color),borderRadius:3}]},options:Object.assign({},baseOpts,{indexAxis:'y',plugins:Object.assign({},baseOpts.plugins,{legend:{display:false},tooltip:Object.assign({},baseOpts.plugins.tooltip,{callbacks:{label:ctx=>fmtN(ctx.parsed.x)+' contacts ('+(ctx.parsed.x/total*100).toFixed(1)+'%)'}})}),scales:{x:{grid:{color:CREAM},ticks:{font:{size:9.5},color:PLUM_SOFT,callback:v=>fmtN(v)},beginAtZero:true},y:{grid:{display:false},ticks:{font:{size:10},color:PLUM_SOFT}}}})});
+
+  // Last 90 days opens (always last 90 days — daily series doesn't change with period)
+  const cutoff=new Date('2026-02-12');
+  const last90=EDM_OPENS_DAILY.filter(d=>new Date(d[0])>=cutoff);
+  new Chart(document.getElementById('c-edm-opens'),{type:'bar',data:{labels:last90.map(d=>{const dt=new Date(d[0]);return dt.toLocaleDateString('en-AU',{month:'short',day:'numeric'})}),datasets:[{label:'Contacts',data:last90.map(d=>d[1]),backgroundColor:'#27BDBE',borderRadius:2}]},options:Object.assign({},baseOpts,{plugins:Object.assign({},baseOpts.plugins,{legend:{display:false}}),scales:{x:Object.assign({},baseOpts.scales.x,{ticks:Object.assign({},baseOpts.scales.x.ticks,{autoSkip:true,maxTicksLimit:14})}),y:baseOpts.scales.y}})});
+
+  // Engagement segments
+  const sg=document.getElementById('edm-segments');
+  if(sg){
+    sg.innerHTML=segments.map(s=>{
+      const pct=total>0?(s.count/total*100):0;
+      return '<div class="seg-card '+s.cls+'"><div class="seg-head"><div class="seg-name">'+s.name+'</div><div class="seg-pct">'+pct.toFixed(1)+'%</div></div><div class="seg-val">'+fmtN(s.count)+'</div><div class="seg-rule">'+s.rule+'</div><div class="seg-action"><span class="a-label">Action</span>'+s.action+'</div></div>';
+    }).join('');
+  }
+}
+
+function renderOrganic(){
+  const ytd=isYTD();
+  // LinkedIn reach KPIs — page metrics switch by period; unique_reach stays 12mo (LinkedIn API constraint).
+  if(typeof LIP_REACH!=='undefined'){
+    const liImp=LIP_REACH.monthly_impressions.filter(r=>MONTHS.indexOf(r[0])>=0).reduce((s,r)=>s+r[1],0);
+    const liEng=LIP_REACH.monthly_engagements.filter(r=>MONTHS.indexOf(r[0])>=0).reduce((s,r)=>s+r[1],0);
+    const reachEr=liImp>0?(liEng/liImp*100):0;
+    const followers=ytd?LIP_REACH.followers_gained_ytd:LIP_REACH.followers_gained_12m;
+    const upv=ytd?LIP_REACH.unique_page_views_ytd:LIP_REACH.unique_page_views_12m;
+    const tpv=ytd?LIP_REACH.total_page_views_ytd:LIP_REACH.total_page_views_12m;
+    const u=document.getElementById('lr-unique');if(u){u.textContent=fmtN(LIP_REACH.unique_reach);document.getElementById('lr-unique-d').textContent=fmtN(followers)+' new followers · reach is 12mo (LinkedIn API)';}
+    const i=document.getElementById('lr-imp');if(i){i.textContent=fmtN(liImp);document.getElementById('lr-imp-d').textContent=(liImp/LIP_REACH.unique_reach).toFixed(1)+' views per person ('+(ytd?'YTD':'12mo')+')';}
+    const e=document.getElementById('lr-er');if(e){e.innerHTML=reachEr.toFixed(1)+'<span class="unit">%</span>';document.getElementById('lr-er-d').textContent=fmtN(liEng)+' total engagements';}
+    const p=document.getElementById('lr-pv');if(p){p.textContent=fmtN(upv);document.getElementById('lr-pv-d').textContent=fmtN(tpv)+' total page views';}
+  }
+
+  const S=ytd?ORGANIC_STATS_YTD:ORGANIC_STATS_12M;
+  const tCount=S.theme_count, tEngTotal=S.theme_eng;
+  const top=Object.entries(tEngTotal).sort((a,b)=>b[1]-a[1])[0];
+  const opl=document.getElementById('o-period-label');if(opl)opl.textContent=ytd?'YTD · '+S.posts+' posts':'12-month rolling · '+S.posts+' posts';
+  const ops=document.getElementById('o-posts-src');if(ops)ops.textContent='LinkedIn organic · '+(ytd?'YTD':'12mo');
+  document.getElementById('o-posts').textContent=fmtN(S.posts);
+  document.getElementById('o-eng').textContent=fmtN(S.total_engagements);
+  document.getElementById('o-er').innerHTML=S.engagement_rate.toFixed(1)+'<span class="unit">%</span>';
+  if(top){const t=THEMES.find(x=>x.id===top[0]);document.getElementById('o-top').textContent=t?t.label:top[0];document.getElementById('o-top-d').textContent=fmtN(top[1])+' eng'}
+  new Chart(document.getElementById('c-themes'),{type:'bar',data:{labels:THEMES.map(t=>t.label),datasets:[{label:'Posts',data:THEMES.map(t=>tCount[t.id]||0),backgroundColor:THEMES.map(t=>t.color),borderRadius:3}]},options:Object.assign({},baseOpts,{indexAxis:'y',plugins:Object.assign({},baseOpts.plugins,{legend:{display:false}}),scales:{x:{grid:{color:CREAM},ticks:{font:{size:9.5},color:PLUM_SOFT,stepSize:1,callback:v=>Math.round(v)},beginAtZero:true},y:{grid:{display:false},ticks:{font:{size:10},color:PLUM_SOFT}}}})});
+}
+
+function isYTD(){return MONTHS===MONTHS_YTD||(MONTHS.length===MONTHS_YTD.length&&MONTHS[0]===MONTHS_YTD[0]);}
+
+function renderPageEngagement(){
+  const ytd=isYTD();
+  const stats=ytd?PAGE_STATS_YTD:PAGE_STATS_12M;
+  const top=ytd?PAGE_TOP_YTD:PAGE_TOP_12M;
+  const bounce=ytd?PAGE_BOUNCE_YTD:PAGE_BOUNCE_12M;
+  const at=document.getElementById('pg-avg-time');if(at)at.innerHTML=stats.avgTime+'<span class="unit">s</span>';
+  const ats=document.getElementById('pg-avg-time-src');if(ats)ats.textContent='Per session · '+(ytd?'YTD':'12mo');
+  const ae=document.getElementById('pg-avg-eng');if(ae)ae.innerHTML=stats.avgEngRate+'<span class="unit">%</span>';
+  const sn=document.getElementById('pg-sticky-name');if(sn)sn.textContent=stats.stickiestName;
+  const st=document.getElementById('pg-sticky-time');if(st)st.textContent=stats.stickiestTime;
+  const sp=document.getElementById('pg-sticky-path');if(sp)sp.textContent=stats.stickiestPath;
+  const bn=document.getElementById('pg-bounce-name');if(bn)bn.textContent=stats.highestBounceName;
+  const br=document.getElementById('pg-bounce-rate');if(br)br.textContent=stats.highestBounceRate;
+  const bnt=document.getElementById('pg-bounce-note');if(bnt)bnt.textContent=stats.highestBounceNote;
+  const tbT=document.querySelector('#pg-top-table tbody');
+  if(tbT){tbT.innerHTML=top.map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1].toLocaleString()+'</td><td class="num">'+r[2].toLocaleString()+'</td><td class="num">'+r[3]+'</td><td class="num">'+r[4]+'</td><td class="num">'+r[5]+'</td></tr>').join('');}
+  const tbB=document.querySelector('#pg-bounce-table tbody');
+  if(tbB){tbB.innerHTML=bounce.map(r=>{const bold=parseFloat(r[2])>50;return '<tr><td>'+r[0]+'</td><td class="num">'+r[1].toLocaleString()+'</td><td class="num">'+(bold?'<strong style="color:var(--wade-pink)">'+r[2]+'</strong>':r[2])+'</td><td>'+r[3]+'</td></tr>'}).join('');}
+}
+
+function renderAll(){
+  destroyAllCharts();
+  const ht=document.querySelector('#hub-table tbody');if(ht)ht.innerHTML='';
+  const ha=document.querySelector('#hub-articles tbody');if(ha)ha.innerHTML='';
+  const ec=document.getElementById('edm-segments');if(ec)ec.innerHTML='';
+  const sst=document.querySelector('#studio-tools-table tbody');if(sst)sst.innerHTML='';
+  const pgT=document.querySelector('#pg-top-table tbody');if(pgT)pgT.innerHTML='';
+  const pgB=document.querySelector('#pg-bounce-table tbody');if(pgB)pgB.innerHTML='';
+  const ytd=isYTD();
+  const progs=ytd?PROGRAMS_YTD:PROGRAMS_12M;
+  const auds=ytd?AUDIENCES_YTD:AUDIENCES_12M;
+  renderCover();renderFullFunnel();renderProgramCards(progs,'program-grid');renderProgramCards(auds,'audience-grid');renderHub();renderOrganic();renderEDM();renderStudio();renderPageEngagement();
+}
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active')})});
+
+// Period switching
+const periodSelect=document.getElementById('period-select');
+if(periodSelect){
+  periodSelect.addEventListener('change',e=>{
+    MONTHS=(e.target.value==='12m')?MONTHS_12M:MONTHS_YTD;
+    ML=buildLabels(MONTHS);
+    renderAll();
+  });
+}
+
+// Initial render
+renderAll();
+</script>
+</body>
+</html>

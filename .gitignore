@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# OneDrive sync artifacts
+*.onetmp
+.~lock.*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node / build artifacts (in case of future tooling)
+node_modules/
+dist/
+.cache/

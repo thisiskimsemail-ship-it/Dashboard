@@ -366,7 +366,7 @@ async function wadeCheckPassword(e){
   <div class="narrative"><span class="nrv-label">What's happening</span>Wade's marketing engine has flipped from post-spike calm to a <strong>paid-search relaunch</strong>. June Google Ads is tracking <strong>~$226/week ($679 MTD, 15.7k impressions, 733 clicks)</strong> — up ~40% on May's $709 total and a sharp reversal from early June's near-dark. Direct still leads the channel mix (872 users in June), with <strong>AI Conundrum, VC Catalyst–Investor and Growth Engine</strong> now the live campaigns and a fresh "AI Assistant" referral channel appearing in GA4. Deal flow has cooled: June has added just <strong>2 new deals and no wins</strong>, after May's 14-new / $39.4k. LinkedIn Ads and Instagram Insights remain blocked at the current Supermetrics tier (queryable connectors: GA4, Google Ads, LinkedIn Pages, Meta Ads, HubSpot). Google Ads recorded <strong>9 conversions in June via All conversions</strong> (the primary-only column reads ~1) — recording fine, not broken.</div>
   <div class="kpi-row">
     <div class="kpi-card"><div class="kpi-label">Site users</div><div class="kpi-val" id="p-users">—</div><div class="kpi-delta" id="p-users-d">&nbsp;</div><div class="kpi-source">GA4</div></div>
-    <div class="def-review"><div class="dr-label">Conversions · YTD</div><div class="dr-val">Definition under review</div><div class="dr-note">GA4 "conversions" currently counts every event marked as a key event (incl. outbound clicks, file downloads). Real-lead metric will return once the event-name filter is wired in — see Things to know tab.</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">Conversions</div><div class="kpi-val" id="p-conv">—</div><div class="kpi-delta" id="p-conv-d">&nbsp;</div><div class="kpi-source">Google Ads · All conv.</div></div>
     <div class="kpi-card pink"><div class="kpi-label">Paid spend</div><div class="kpi-val" id="p-spend">—</div><div class="kpi-delta" id="p-spend-d">&nbsp;</div><div class="kpi-source">G + LI + Meta</div></div>
     <div class="kpi-card yellow"><div class="kpi-label">Closed-won</div><div class="kpi-val" id="p-won">—</div><div class="kpi-delta" id="p-won-d">&nbsp;</div><div class="kpi-source">HubSpot Wade</div></div>
   </div>
@@ -376,7 +376,7 @@ async function wadeCheckPassword(e){
   </div>
   <div class="chart-grid">
     <div class="panel"><div class="panel-title">Paid spend by platform</div><div class="panel-sub">Monthly stacked spend (AUD)</div><div class="chart-wrap"><canvas id="c-spend"></canvas></div></div>
-    <div class="panel" style="border-left:3px solid var(--wade-yellow)"><div class="panel-title" style="color:#9C9D14">Conversions trend · under review</div><div class="panel-sub">Chart hidden until the GA4 event-name filter is configured to exclude outbound clicks, file downloads and scroll events. The current `conversions` field overstates real lead volume — see <em>Things to know</em>.</div><div class="def-review" style="margin-top:8px"><div class="dr-label">Why this is hidden</div><div class="dr-val">Bad data is worse than no data</div><div class="dr-note">April Direct showed 7,000 conversions — 17× the next-highest month — almost certainly because GA4 is counting non-lead events. The dashboard hides the metric rather than mislead decisions taken from it. Quick fix in pipeline: confirm with Kim which event names = real leads.</div></div></div>
+    <div class="panel"><div class="panel-title">Conversions trend</div><div class="panel-sub">Monthly Google Ads conversions (<code>All conversions</code> — includes secondary actions like GA4 form_submit). GA4 site key-events are excluded here because they overstate real leads — see <em>Things to know</em>.</div><div class="chart-wrap"><canvas id="c-conv"></canvas></div></div>
   </div>
   <div class="chart-grid">
     <div class="panel audience"><div class="panel-title">HubSpot · Wade pipelines</div><div class="panel-sub">Wade Sales + MoE only · monthly closed-won + value</div><div class="chart-wrap"><canvas id="c-hs"></canvas></div></div>
@@ -610,7 +610,7 @@ async function wadeCheckPassword(e){
       <tr><td><strong>Site users</strong></td><td>Unique users with at least one session on wadeinstitute.org.au in the period</td><td>GA4 · totalUsers</td><td>Cookie-based; respects Wade's GA4 consent settings</td></tr>
       <tr><td><strong>Page visits / Sessions</strong></td><td>GA4 sessions on Wade properties</td><td>GA4 · sessions</td><td>—</td></tr>
       <tr><td><strong>Channel</strong></td><td>GA4's default channel grouping for each session (Direct, Organic Search, Paid Search, etc.)</td><td>GA4 · sessionDefaultChannelGrouping</td><td>GA4 attribution defaults</td></tr>
-      <tr><td><strong>Conversions</strong></td><td><em>Currently HIDDEN</em> — see Things to know. GA4 counts all "key events" including outbound clicks/file downloads, so the number is inflated and not real-lead-equivalent.</td><td>GA4 · conversions</td><td>Real fix pending event-name filter</td></tr>
+      <tr><td><strong>Conversions</strong></td><td>Google Ads <code>All conversions</code> (EstimatedTotalConversions) — includes secondary actions such as GA4 form_submit. Wade's conversion actions are set Secondary, so the primary-only <code>Conversions</code> column reads ~0; All conversions is the real count (9 in June 2026). GA4 site "conversions" is excluded — it counts every key event (outbound clicks, downloads) and overstates leads.</td><td>Google Ads · All conv.</td><td>Weekly</td></tr>
       <tr><td><strong>Paid spend</strong></td><td>Sum of Google Ads + LinkedIn Ads + Meta Ads cost, in AUD, period-filtered</td><td>AW + LIA + FA · cost / spend</td><td>Meta historically empty</td></tr>
       <tr><td><strong>Closed-won deals</strong></td><td>Count of HubSpot deals in Wade pipelines with stage = closed won</td><td>HS · deal_closed_won</td><td>Filter: <code>deal_pipeline =@ Wade</code></td></tr>
       <tr><td><strong>Closed-won value</strong></td><td>Sum of deal amount on closed-won Wade deals (AUD)</td><td>HS · deal_amount_closed_won</td><td>Excludes Ormond Residential pipeline</td></tr>
@@ -1316,7 +1316,7 @@ function renderCover(){
   document.getElementById('cs-won').textContent=fmtN(tw)+' · '+fmtM(twv);
 
   document.getElementById('p-users').textContent=fmtN(tu);
-  const pc=document.getElementById('p-conv');if(pc)pc.textContent=fmtN(tc);
+  const tcPaid=bms(GADS,0,4).reduce((a,b)=>a+b,0)+bms(LIA,0,4).reduce((a,b)=>a+b,0);const pc=document.getElementById('p-conv');if(pc)pc.textContent=fmtN(tcPaid);
   document.getElementById('p-spend').textContent=fmtM(ts);
   document.getElementById('p-won').innerHTML=fmtN(tw)+' <span class="unit">· '+fmtM(twv)+'</span>';
 
@@ -1350,15 +1350,16 @@ function renderCover(){
   setDelta('p-users-d',tu,_priorUsers);
   setDelta('p-spend-d',ts,_priorSpend);
   setDelta('p-won-d',tw,_priorWon);
+  const _priorPaidConv=_prior?((sumRowsByMonths(GADS,0,4,_prior)||0)+(sumRowsByMonths(LIA,0,4,_prior)||0)):null;setDelta('p-conv-d',tcPaid,_priorPaidConv);
 
   new Chart(document.getElementById('c-acq'),{type:'bar',data:{labels:ML,datasets:[{label:'Sessions',data:sessByMonth,backgroundColor:'#E4E517',borderRadius:4,order:2},{label:'Users',data:usersByMonth,type:'line',borderColor:'#F15A22',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:1}]},options:baseOpts});
   const order=['Direct','Organic Search','Paid Search','Organic Social','Paid Social','Email','Referral','Display','Cross-network','Organic Video','Paid Other','Unassigned','(Other)'];
   const channels=Object.keys(channelTotals).sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai===-1?99:ai)-(bi===-1?99:bi)});
   new Chart(document.getElementById('c-channel'),{type:'bar',data:{labels:ML,datasets:channels.map(ch=>({label:ch,data:channelTotals[ch],backgroundColor:channelColors[ch]||'#9ABEC4',stack:'channels',borderWidth:0}))},options:Object.assign({},baseOpts,{scales:{x:Object.assign({},baseOpts.scales.x,{stacked:true}),y:Object.assign({},baseOpts.scales.y,{stacked:true})}})});
   new Chart(document.getElementById('c-spend'),{type:'bar',data:{labels:ML,datasets:[{label:'Google Ads',data:gAds,backgroundColor:'#F15A22',stack:'spend',borderRadius:2},{label:'LinkedIn Ads',data:lAds,backgroundColor:'#27BDBE',stack:'spend',borderRadius:2},{label:'Meta Ads',data:MONTHS.map(()=>0),backgroundColor:'#ED3694',stack:'spend',borderRadius:2}]},options:Object.assign({},baseOpts,{scales:{x:Object.assign({},baseOpts.scales.x,{stacked:true}),y:Object.assign({},baseOpts.scales.y,{stacked:true,ticks:Object.assign({},baseOpts.scales.y.ticks,{callback:v=>fmtM(v)})})}})});
-  // Conversions chart hidden — see Performance tab placeholder. Re-enable once GA4 event filter is configured.
+  // Conversions trend — Google Ads All conversions (EstimatedTotalConversions). GA4 key events excluded (inflated).
   const ccCanvas=document.getElementById('c-conv');
-  if(ccCanvas){const gC=bms(GADS,0,4),lC=bms(LIA,0,4);const paidC=convByMonth.map((_,i)=>(gC[i]||0)+(lC[i]||0));new Chart(ccCanvas,{type:'bar',data:{labels:ML,datasets:[{label:'GA4 key events',data:convByMonth,backgroundColor:'#27BDBE',borderRadius:4,order:2},{label:'Paid conversions',data:paidC,type:'line',borderColor:'#ED3694',tension:0.3,fill:false,pointRadius:3,borderWidth:2.5,order:1}]},options:baseOpts});}
+  if(ccCanvas){const gC=bms(GADS,0,4),lC=bms(LIA,0,4);const paidC=gC.map((v,i)=>(v||0)+(lC[i]||0));new Chart(ccCanvas,{type:'bar',data:{labels:ML,datasets:[{label:'Google Ads conversions (All conv.)',data:paidC,backgroundColor:'#27BDBE',borderRadius:4}]},options:baseOpts});}
 
   const hsD=MONTHS.map(()=>0),hsAW=MONTHS.map(()=>0);
   HS_DEALS.forEach(([ym,d,w,a,aw])=>{const i=getMI(ym);if(i<0)return;hsD[i]=d;hsAW[i]=aw});

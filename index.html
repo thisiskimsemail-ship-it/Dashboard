@@ -451,6 +451,25 @@ async function wadeCheckPassword(e){
     <div class="kpi-card pink"><div class="kpi-label" id="e-click-lbl">Click-engaged · 12mo</div><div class="kpi-val" id="e-click">—</div><div class="kpi-delta" id="e-click-d">&nbsp;</div><div class="kpi-source">Contact last click date</div></div>
     <div class="kpi-card lavender"><div class="kpi-label" id="e-never-lbl">No 12mo activity</div><div class="kpi-val" id="e-never">—</div><div class="kpi-delta" id="e-never-d">&nbsp;</div><div class="kpi-source">No open in window</div></div>
   </div>
+  <!-- Email & nurture performance · contact-level (HubSpot last-email + open/click dates) · snapshot 2026-06-29.
+       Update each refresh from: contacts grouped by contact_email_last_email_name (reach),
+       same filtered to contact_email_last_open_date >= window (opens) and contact_email_last_click_date >= window (clicks). -->
+  <div class="panel" style="margin-top:14px">
+    <div class="panel-title">Email &amp; nurture performance</div>
+    <div class="panel-sub">Contact-level read (HubSpot last-marketing-email name crossed with open/click dates, opens since 20 Jun). Per-campaign open/click/unsubscribe rates need a HubSpot Marketing/Content scope upgrade. Opens are Apple-MPP inflated. Snapshot 29 Jun 2026.</div>
+    <div style="font-weight:600;margin:10px 2px 4px;font-size:13px;">Database broadcast — AI email (Jess)</div>
+    <table class="tbl"><thead><tr><th>Send</th><th class="num">Reached</th><th class="num">Opened</th><th class="num">Open&nbsp;%</th><th class="num">Clicked</th><th class="num">Click&nbsp;%</th><th class="num">CTOR</th></tr></thead>
+      <tbody>
+        <tr><td>Wade_Segment test_AIC</td><td class="num">5,039</td><td class="num">1,002</td><td class="num">19.9%</td><td class="num">65</td><td class="num">1.3%</td><td class="num">6.5%</td></tr>
+      </tbody></table>
+    <div style="font-weight:600;margin:14px 2px 4px;font-size:13px;">AI Conundrum nurture — automated (AIC NURTURE 01)</div>
+    <table class="tbl"><thead><tr><th>Step</th><th class="num">In step</th><th class="num">Opened</th><th class="num">Open&nbsp;%</th><th class="num">Clicked</th><th class="num">Click&nbsp;%</th><th class="num">CTOR</th></tr></thead>
+      <tbody>
+        <tr><td>01 — Hook</td><td class="num">2</td><td class="num">1</td><td class="num">50.0%</td><td class="num">0</td><td class="num">0%</td><td class="num">0%</td></tr>
+        <tr><td>03 — Peers</td><td class="num">61</td><td class="num">43</td><td class="num">70.5%</td><td class="num">17</td><td class="num">27.9%</td><td class="num">39.5%</td></tr>
+      </tbody></table>
+    <div class="callout" style="margin-top:10px"><strong>Read:</strong> Jess's AI email reached ~5,000 of the database at a typical broad-blast ~20% open / 1.3% click — one of the two late-June sends behind this month's engagement surge. The AI Conundrum nurture is tiny (~60 in-flow) but very high quality — 70% open / 28% click on the Peers step, several times the list average. Related AMA invites: "AI Conundrum AMA" 63, "AMA – Parents" 109. The lever now is feeding more qualified contacts into the nurture. <em>("In step" = contacts whose most-recent marketing email is that step, so contacts who finished and moved on aren't counted.)</em></div>
+  </div>
   <div class="chart-grid">
     <div class="panel"><div class="panel-title">Engagement recency</div><div class="panel-sub" id="edm-recency-sub">Wade-listed contacts bucketed by most recent open</div><div class="chart-wrap"><canvas id="c-edm-recency"></canvas></div></div>
     <div class="panel"><div class="panel-title">Daily opens · last 90 days</div><div class="panel-sub">Count of contacts whose last open occurred on each day (rolling 90d snapshot)</div><div class="chart-wrap"><canvas id="c-edm-opens"></canvas></div></div>
